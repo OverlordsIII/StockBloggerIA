@@ -1,21 +1,19 @@
 package io.github.overlordsiii.stockblogger;
 
+import com.google.gson.JsonObject;
+import io.github.overlordsiii.request.Request;
+import io.github.overlordsiii.request.Requests;
 import io.github.overlordsiii.stockblogger.config.PropertiesHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import io.github.overlordsiii.util.JsonUtils;
+import io.github.overlordsiii.util.RequestUtil;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
 public class StockBlogger {
 
-    public static final Logger LOGGER = LogManager.getLogger(StockBlogger.class);
+    public static final Logger LOGGER = Logger.getLogger("StockBlogger");
 
     public static final PropertiesHandler API_KEY = PropertiesHandler
             .builder()
@@ -23,35 +21,27 @@ public class StockBlogger {
             .setFileName("api_keys.properties")
             .build();
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+    public static final Scanner SCANNER = new Scanner(System.in);
 
-        System.out.println("What stock do you want information on?: ");
+    public static void main(String[] args) throws IOException, InterruptedException {
+        System.out.println("What stock do you want to analyze?");
 
-        String stockName = scanner.nextLine();
+        String stock = SCANNER.nextLine();
 
-        try {
-            URL url = new URL("https://api.twelvedata.com/price?symbol=" + stockName + "&apikey=" + API_KEY.getConfigOption("stockAPIKey"));
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            conn.setRequestProperty("Accept", "application/json");
+        String symbol = RequestUtil.getStockSymbol(stock);
 
-            if (conn.getResponseCode() != 200) {
-                throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
-            }
+        Request request = Requests.makeStockPriceRequest(symbol);
 
-            BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
+        JsonObject object = request.makeRequest();
 
-            String output;
-            System.out.println("Output from Server .... \n");
-            while ((output = br.readLine()) != null) {
-                System.out.println(output);
-            }
+        if (JsonUtils.validResponse("price", object)) {
+            double price = Double.parseDouble(request.makeRequest().get("price").getAsString());
 
-            conn.disconnect();
-
-        } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Price: " + price);
+        } else {
+            System.out.println(JsonUtils.objToString(object));
         }
+
+
     }
 }

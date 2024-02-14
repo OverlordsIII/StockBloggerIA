@@ -27,7 +27,7 @@ public class PropertiesHandler {
             try {
                 Files.createDirectory(CONFIG_HOME_DIRECTORY);
             } catch (IOException e) {
-                StockBlogger.LOGGER.error("Error while creating config home directory at: \"" + CONFIG_HOME_DIRECTORY + "\"");
+                StockBlogger.LOGGER.info("Error while creating config home directory at: \"" + CONFIG_HOME_DIRECTORY + "\"");
                 e.printStackTrace();
             }
         }
@@ -44,7 +44,7 @@ public class PropertiesHandler {
             load();
             save();
         } catch (IOException e) {
-            StockBlogger.LOGGER.error("Error while initializing Properties Config for file " + "\"" + propertiesPath + "\"" + "!");
+            StockBlogger.LOGGER.info("Error while initializing Properties Config for file " + "\"" + propertiesPath + "\"" + "!");
             e.printStackTrace();
         }
 
@@ -92,7 +92,7 @@ public class PropertiesHandler {
             save();
             load();
         } catch (IOException e) {
-            StockBlogger.LOGGER.error("Error while initializing Properties Config for file " + "\"" + propertiesPath + "\"" + "!");
+            StockBlogger.LOGGER.info("Error while initializing Properties Config for file " + "\"" + propertiesPath + "\"" + "!");
             e.printStackTrace();
         }
     }
@@ -119,7 +119,7 @@ public class PropertiesHandler {
         try {
             file = Files.readString(htmlPath);
         } catch (IOException e) {
-            StockBlogger.LOGGER.error("Error while reading string for html file on path \"" + htmlPath + "\"!", e);
+            StockBlogger.LOGGER.info("Error while reading string for html file on path \"" + htmlPath + "\"!");
             e.printStackTrace();
             return null;
         }
