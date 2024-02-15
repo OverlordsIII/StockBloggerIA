@@ -12,12 +12,10 @@ import java.util.Scanner;
 import java.util.logging.Logger;
 
 public class StockBlogger {
-
-    public static final Logger LOGGER = Logger.getLogger("StockBlogger");
-
     public static final PropertiesHandler API_KEY = PropertiesHandler
             .builder()
             .addConfigOption("stockAPIKey", "")
+            .addConfigOption("chatGptApiKey", "")
             .setFileName("api_keys.properties")
             .build();
 
@@ -39,8 +37,14 @@ public class StockBlogger {
 
             System.out.println("Price: " + price);
         } else {
-            System.out.println(JsonUtils.objToString(object));
+            System.out.println("Error when parsing response!:\n" + JsonUtils.objToString(object));
         }
+
+        System.out.println("Executing Chat-GPT Request");
+
+        Request chatgpt = Requests.requestChatGPTRivals(stock);
+
+        System.out.println("Request: \n" + JsonUtils.objToString(chatgpt.makeRequest()));
 
 
     }

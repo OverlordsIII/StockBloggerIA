@@ -23,7 +23,7 @@ public class RequestUtil {
             JsonObject object1 = element.getAsJsonObject();
             String name = object1.get("instrument_name").getAsString();
 
-            System.out.println(i + " - " + name + " (" + object1.get("country").getAsString() + ")");
+            System.out.println(i + " - " + name + " (" + object1.get("country").getAsString() + " - " + object1.get("exchange").getAsString() +  ")");
             i++;
         }
 
