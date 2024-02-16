@@ -22,6 +22,7 @@ public class StockBlogger {
     public static final Scanner SCANNER = new Scanner(System.in);
 
     public static void main(String[] args) throws IOException, InterruptedException {
+        // TODO Require config keys be nonempty
         System.out.println("What stock do you want to analyze?");
 
         String stock = SCANNER.nextLine();
@@ -43,6 +44,21 @@ public class StockBlogger {
         System.out.println("Executing Chat-GPT Request");
 
         Request chatgpt = Requests.requestChatGPTRivals(stock);
+
+        JsonObject response = chatgpt.makeRequest();
+
+        JsonObject error = RequestUtil.chatGPTHasError(response);
+
+        if (error != null) {
+            if (error.get("message").getAsString().contains("exceeded your current quota")) {
+                System.out.println("Chat GPT API Key has exceeded it's current quota! Please update the Chat GPT API Key in api_keys.properties!");
+            }  else {
+                System.out.println("Error Occurred!");
+                System.out.println("Error: \n" + JsonUtils.objToString(error));
+            }
+
+            return;
+        }
 
         System.out.println("Request: \n" + JsonUtils.objToString(chatgpt.makeRequest()));
 

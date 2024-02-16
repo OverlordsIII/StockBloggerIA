@@ -10,6 +10,19 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class RequestUtil {
+
+    public static JsonObject chatGPTHasError(JsonObject response) {
+        if (response.has("error")) {
+            return response.get("error").getAsJsonObject();
+        }
+
+        return null;
+    }
+
+    public static String[] getRivals(JsonObject response) {
+        return null;
+    }
+
     public static String getStockSymbol(String bestGuessName) throws IOException, InterruptedException {
         JsonObject object = Requests.makeSymbolSearchRequest(bestGuessName).makeRequest();
 
