@@ -3,6 +3,7 @@ package io.github.overlordsiii.request;
 import com.google.gson.JsonObject;
 import io.github.overlordsiii.stockblogger.StockBlogger;
 import io.github.overlordsiii.util.JsonUtils;
+import io.github.overlordsiii.util.RequestUtil;
 
 import java.io.IOException;
 import java.net.URI;
@@ -25,7 +26,7 @@ public class Request {
     private final Map<String, String> headers = new HashMap<>();
 
     public Request(String path, RequestType type, JsonObject body) {
-        this.path = path;
+        this.path = RequestUtil.urlifyString(path);
         this.type = type;
         this.body = body;
         headers.put("Content-Type", "application/json");
@@ -48,7 +49,7 @@ public class Request {
 
         HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println("Made " + this.type.name() + " request to " + path + this.path + " with body: " + JsonUtils.objToString(this.body));
+        System.out.println("Made " + this.type.name() + " request to " + this.path + " with body: " + JsonUtils.objToString(this.body));
 
         JsonObject responseObj = JsonUtils.toJsonObj(response.body());
         // uncomment when u need to debug

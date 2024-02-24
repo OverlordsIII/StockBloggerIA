@@ -18,6 +18,8 @@ public class PropertiesHandler {
 
     private final Map<String, String> configValues;
 
+    private final boolean nonNull;
+
     public static final Path CONFIG_HOME_DIRECTORY = Paths.get("src", "main", "resources").resolve("Stock Blogger Config");
 
     public static final Path HTML_FILE_DIRECTORY = Paths.get("src", "main", "resources").resolve("html");
@@ -33,8 +35,8 @@ public class PropertiesHandler {
         }
     }
 
-    private PropertiesHandler(String filename, Map<String, String> configValues) {
-
+    private PropertiesHandler(String filename, Map<String, String> configValues, boolean nonNull) {
+        this.nonNull = nonNull;
         this.propertiesPath = CONFIG_HOME_DIRECTORY.resolve(filename);
         this.configValues = configValues;
     }
@@ -43,10 +45,13 @@ public class PropertiesHandler {
         try {
             load();
             save();
+            nonNullCheck();
         } catch (IOException e) {
             System.out.println("Error while initializing Properties Config for file " + "\"" + propertiesPath + "\"" + "!");
             e.printStackTrace();
         }
+
+
 
     }
 
@@ -91,10 +96,19 @@ public class PropertiesHandler {
         try {
             save();
             load();
+            nonNullCheck();
         } catch (IOException e) {
             System.out.println("Error while initializing Properties Config for file " + "\"" + propertiesPath + "\"" + "!");
             e.printStackTrace();
         }
+    }
+
+    private void nonNullCheck() {
+        configValues.forEach((key, value) -> {
+            if ((value == null || value.isEmpty() || value.equals("null")) && nonNull) {
+                throw new NullPointerException("Key \"" + key + "\" was null for Properties Handler \"" + propertiesPath.getFileName() + "\"!");
+            }
+        });
     }
 
     public <T> T getConfigOption(String key, Function<String, T> parser) {
@@ -191,7 +205,14 @@ public class PropertiesHandler {
         private final Map<String, String> configValues = new HashMap<>();
         private String filename;
 
+        private boolean nonNull = false;
+
         private Builder() {
+        }
+
+        public Builder requireNonNull() {
+            this.nonNull = true;
+            return this;
         }
 
         public Builder addConfigOption(String key, String defaultValue) {
@@ -214,7 +235,7 @@ public class PropertiesHandler {
         }
 
         public PropertiesHandler build() {
-            PropertiesHandler propertiesHandler = new PropertiesHandler(filename, configValues);
+            PropertiesHandler propertiesHandler = new PropertiesHandler(filename, configValues, nonNull);
             propertiesHandler.initialize();
             System.out.println("Properties Handler with file name \"" + filename + "\" created on path \"" + propertiesHandler.propertiesPath + "\"");
             return propertiesHandler;

@@ -8,6 +8,9 @@ import io.github.overlordsiii.util.JsonUtils;
 import io.github.overlordsiii.util.RequestUtil;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
@@ -17,29 +20,27 @@ public class StockBlogger {
             .addConfigOption("stockAPIKey", "")
             .addConfigOption("chatGptApiKey", "")
             .setFileName("api_keys.properties")
+            .requireNonNull()
             .build();
 
     public static final Scanner SCANNER = new Scanner(System.in);
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        // TODO Require config keys be nonempty
+        // TODO Encapsulate / Abstractify more of the functions in this big main method
         System.out.println("What stock do you want to analyze?");
 
         String stock = SCANNER.nextLine();
 
         String symbol = RequestUtil.getStockSymbol(stock);
 
-        Request request = Requests.makeStockPriceRequest(symbol);
+        Double price = RequestUtil.getPrice(symbol);
 
-        JsonObject object = request.makeRequest();
-
-        if (JsonUtils.validResponse("price", object)) {
-            double price = Double.parseDouble(request.makeRequest().get("price").getAsString());
-
-            System.out.println("Price: " + price);
-        } else {
-            System.out.println("Error when parsing response!:\n" + JsonUtils.objToString(object));
+        if (price == null) {
+            System.out.println("Error when parsing response!");
+            return;
         }
+
+        System.out.println("Price: " + price);
 
         System.out.println("Executing Chat-GPT Request");
 
@@ -60,8 +61,33 @@ public class StockBlogger {
             return;
         }
 
-        System.out.println("Request: \n" + JsonUtils.objToString(chatgpt.makeRequest()));
 
+        String[] rivals = RequestUtil.getRivals(response);
+
+        System.out.println("Rivals: ");
+
+        for (String rival : rivals) {
+            System.out.println(rival);
+        }
+
+        System.out.println("Please answer the following questions: ");
+        Map<String, Double> map = RequestUtil.getRivalPrices(rivals);
+
+        System.out.println("These are the popular rivals to " + stock + " and their respective stock prices: ");
+        for (Map.Entry<String, Double> entry : map.entrySet()) {
+            String s = entry.getKey();
+            Double aDouble = entry.getValue();
+            System.out.println(RequestUtil.getName(s) + ": " + aDouble);
+        }
+
+        List<Double> doubles = RequestUtil.getAllHistoricalStockData(symbol);
+
+        Map<String, List<Double>> rivalsHistoricalData = new HashMap<>();
+
+        for (Map.Entry<String, Double> entry : map.entrySet()) {
+            String s = entry.getKey();
+            rivalsHistoricalData.put(s, RequestUtil.getAllHistoricalStockData(s));
+        }
 
     }
 }
