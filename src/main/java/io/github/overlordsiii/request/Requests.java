@@ -44,7 +44,7 @@ public class Requests {
     }
 
     public static Request makeHistoricalPriceRequest(String symbol) {
-        return new Request("https://api.twelvedata.com/time_series?symbol=" + symbol + "&interval=1month&start_date=" + LocalDateTime.now().minusYears(5) + "&apikey=" + API_KEY.getConfigOption("stockAPIKey"), RequestType.GET, null);
+        return new Request("https://api.twelvedata.com/time_series?symbol=" + symbol + "&interval=1week&start_date=" + LocalDateTime.now().minusYears(5) + "&apikey=" + API_KEY.getConfigOption("stockAPIKey"), RequestType.GET, null);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
