@@ -1,17 +1,17 @@
 package io.github.overlordsiii.stockblogger;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+import io.github.overlordsiii.api.Stock;
 import io.github.overlordsiii.request.Request;
 import io.github.overlordsiii.request.Requests;
 import io.github.overlordsiii.stockblogger.config.PropertiesHandler;
 import io.github.overlordsiii.util.JsonUtils;
+import io.github.overlordsiii.util.MiscUtil;
 import io.github.overlordsiii.util.RequestUtil;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class StockBlogger {
@@ -19,6 +19,7 @@ public class StockBlogger {
             .builder()
             .addConfigOption("stockAPIKey", "")
             .addConfigOption("chatGptApiKey", "")
+            .addConfigOption("stockAPIKey2", "") // for rate limits, we alternate api keys each request
             .setFileName("api_keys.properties")
             .requireNonNull()
             .build();
@@ -40,7 +41,7 @@ public class StockBlogger {
             return;
         }
 
-        // builder.append()("Price: " + price);
+        Stock selectedStock = new Stock(stock, RequestUtil.getName(symbol), price);
 
         System.out.println("Executing Chat-GPT Request");
 
@@ -64,52 +65,44 @@ public class StockBlogger {
 
         String[] rivals = RequestUtil.getRivals(response);
 
-        //  builder.append()("Rivals: ");
-
-        for (String rival : rivals) {
-            //   builder.append()(rival);
-        }
+        List<Stock> rivalStocks = new ArrayList<>();
 
         System.out.println("Please answer the following questions: ");
         Map<String, Double> map = RequestUtil.getRivalPrices(rivals);
 
-        System.out.println("These are the popular rivals to " + stock + " and their respective stock prices: ");
-        for (Map.Entry<String, Double> entry : map.entrySet()) {
-            String s = entry.getKey();
-            Double aDouble = entry.getValue();
-            //  builder.append()(RequestUtil.getName(s) + ": " + aDouble);
+        for (Map.Entry<String, Double> e : map.entrySet()) {
+            String key = e.getKey();
+            Double value = e.getValue();
+            rivalStocks.add(new Stock(key, RequestUtil.getName(key), value));
         }
 
         List<Double> doubles = RequestUtil.getAllHistoricalStockData(symbol);
 
-        Map<String, List<Double>> rivalsHistoricalData = new HashMap<>();
+        Objects.requireNonNull(doubles).forEach(selectedStock::addHistoricalDataPoint);
 
-        for (Map.Entry<String, Double> entry : map.entrySet()) {
-            String s = entry.getKey();
-            rivalsHistoricalData.put(s, RequestUtil.getAllHistoricalStockData(s));
+        for (Stock rivalStock : rivalStocks) {
+            Objects.requireNonNull(RequestUtil.getAllHistoricalStockData(rivalStock.getSymbol()))
+                    .forEach(rivalStock::addHistoricalDataPoint);
         }
 
         StringBuilder builder = new StringBuilder();
 
         builder.append("======================================\n");
         builder.append("Here is your stock data analysis!:\n");
-        builder.append("Your selected stock: " + RequestUtil.getName(symbol) + "\n");
-        builder.append("Price: " + price + "\n");
+        builder.append("Your selected stock: " + selectedStock.getName() + "\n");
+        builder.append("Price: " + selectedStock.getPrice() + "\n");
         builder.append("Now here are your rivals:\n");
-        for (Map.Entry<String, Double> entry : map.entrySet()) {
-            String s = entry.getKey();
-            Double aDouble = entry.getValue();
-            builder.append(RequestUtil.getName(s) + " - " + aDouble + "\n");
-        }
+        rivalStocks.forEach(stock1 -> {
+            builder.append(stock1.getName() + " - " + stock1.getPrice() + "\n");
+        });
 
         builder.append("Here is your historical stock data: \n");
-        builder.append(RequestUtil.getName(symbol) + " - " + doubles + "\n");
+        builder.append(selectedStock.getName() + " - " + MiscUtil.getFormattedMap(selectedStock.getHistoricalData(), integer -> integer + " Months Ago", aDouble -> new JsonPrimitive("$" + aDouble)) + "\n");
         builder.append("Now here is the rival historical stock data: \n");
-        for (Map.Entry<String, List<Double>> entry : rivalsHistoricalData.entrySet()) {
-            String s = entry.getKey();
-            List<Double> doubles1 = entry.getValue();
-            builder.append(RequestUtil.getName(s) + " - " + doubles1 + "\n");
-        }
+
+        rivalStocks.forEach(stock1 -> {
+            builder.append(stock1.getName() + " - " + MiscUtil.getFormattedMap(stock1.getHistoricalData(), integer -> integer + " Months Ago", aDouble -> new JsonPrimitive("$" + aDouble)) + "\n");
+        });
         builder.append("======================================\n");
 
         System.out.println(builder);

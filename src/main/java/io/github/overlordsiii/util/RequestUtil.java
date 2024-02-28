@@ -165,7 +165,9 @@ public class RequestUtil {
         if (num == -1) {
             System.out.println("What is the stock symbol instead for " + bestGuessName + "?");
 
-            return StockBlogger.SCANNER.nextLine();
+            String line = StockBlogger.SCANNER.nextLine();
+
+            return line;
         }
 
         return array.get(num).getAsJsonObject().get("symbol").getAsString();
@@ -174,5 +176,9 @@ public class RequestUtil {
     //ensures all spaces are replace
     public static String urlifyString(String string) {
         return string.replaceAll("\\s+", "");
+    }
+
+    public static String getStockAPIKey() {
+
     }
 }
