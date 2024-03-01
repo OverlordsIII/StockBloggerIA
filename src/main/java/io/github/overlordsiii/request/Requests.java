@@ -3,6 +3,7 @@ package io.github.overlordsiii.request;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.overlordsiii.util.JsonUtils;
+import io.github.overlordsiii.util.RequestUtil;
 
 import static io.github.overlordsiii.stockblogger.StockBlogger.API_KEY;
 
@@ -14,11 +15,11 @@ public class Requests {
     private static final String QUERY_RIVAL_PROMPT = "Give me the stock symbols of companies that rival [STOCK_NAME]. Please limit this list to the top 5 rivals and output the list as a numbered list. Please ensure this is the rivals STOCK SYMBOL, not their name. Put the name of the company in parenthesis following, like this: \" [STOCK_SYMBOL] ([STOCK_NAME])\"";
 
     public static Request makeStockNameRequest(String symbol) {
-        return new Request("https://api.twelvedata.com/stocks?symbol=" + symbol + "&apikey=" + API_KEY.getConfigOption("stockAPIKey"), RequestType.GET, null);
+        return new Request("https://api.twelvedata.com/stocks?symbol=" + symbol + "&apikey=" + RequestUtil.getStockAPIKey(), RequestType.GET, null);
     }
 
     public static Request makeStockPriceRequest(String stockSymbol) {
-        return new Request("https://api.twelvedata.com/price?symbol=" + stockSymbol + "&apikey=" + API_KEY.getConfigOption("stockAPIKey"), RequestType.GET, null);
+        return new Request("https://api.twelvedata.com/price?symbol=" + stockSymbol + "&apikey=" + RequestUtil.getStockAPIKey(), RequestType.GET, null);
     }
 
     public static Request makeSymbolSearchRequest(String stockName) {
@@ -44,7 +45,7 @@ public class Requests {
     }
 
     public static Request makeHistoricalPriceRequest(String symbol) {
-        return new Request("https://api.twelvedata.com/time_series?symbol=" + symbol + "&interval=1week&start_date=" + LocalDateTime.now().minusYears(5) + "&apikey=" + API_KEY.getConfigOption("stockAPIKey"), RequestType.GET, null);
+        return new Request("https://api.twelvedata.com/time_series?symbol=" + symbol + "&interval=1week&start_date=" + LocalDateTime.now().minusYears(5) + "&apikey=" + RequestUtil.getStockAPIKey(), RequestType.GET, null);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {

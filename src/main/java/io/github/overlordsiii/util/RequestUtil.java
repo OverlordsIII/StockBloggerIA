@@ -8,12 +8,7 @@ import io.github.overlordsiii.request.Requests;
 import io.github.overlordsiii.stockblogger.StockBlogger;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RequestUtil {
@@ -158,15 +153,15 @@ public class RequestUtil {
             i++;
         }
 
-        System.out.println("Enter the number off the stock you desire (if you know the stock symbol and it's not here, enter -1)");
+        System.out.println("Enter the number off the stock you desire (if you know the stock symbol and it's not here, enter -1). If you don't see any companies listed, it is likely your requested company is not public on the stock market");
 
         int num = StockBlogger.SCANNER.nextInt();
 
         if (num == -1) {
             System.out.println("What is the stock symbol instead for " + bestGuessName + "?");
 
-            String line = StockBlogger.SCANNER.nextLine();
-
+            String line = StockBlogger.SCANNER.nextLine()
+            // TODO fix manual entering of stock symbols
             return line;
         }
 
@@ -179,6 +174,9 @@ public class RequestUtil {
     }
 
     public static String getStockAPIKey() {
+        Random random = new Random();
+        boolean bl = random.nextBoolean();
 
+        return StockBlogger.API_KEY.getConfigOption(bl ? "stockAPIKey" : "stockAPIKey2");
     }
 }
