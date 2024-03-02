@@ -17,9 +17,9 @@ import java.util.logging.Logger;
 public class StockBlogger {
     public static final PropertiesHandler API_KEY = PropertiesHandler
             .builder()
-            .addConfigOption("stockAPIKey", "")
+            .addConfigOption("twelveDataApiKey", "")
             .addConfigOption("chatGptApiKey", "")
-            .addConfigOption("stockAPIKey2", "") // for rate limits, we alternate api keys each request
+            .addConfigOption("twelveDataApiKey2", "") // for rate limits, we alternate api keys each request
             .setFileName("api_keys.properties")
             .requireNonNull()
             .build();
@@ -27,6 +27,8 @@ public class StockBlogger {
     public static final Scanner SCANNER = new Scanner(System.in);
 
     public static void main(String[] args) throws IOException, InterruptedException {
+        API_KEY.validateNonNull();
+
         // TODO Encapsulate / Abstractify more of the functions in this big main method
         System.out.println("What stock do you want to analyze?");
 

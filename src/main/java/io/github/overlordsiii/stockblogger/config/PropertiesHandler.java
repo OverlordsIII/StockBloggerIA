@@ -2,7 +2,9 @@ package io.github.overlordsiii.stockblogger.config;
 
 import io.github.overlordsiii.stockblogger.StockBlogger;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -12,6 +14,8 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.function.Function;
 
+import javax.swing.text.html.HTML;
+
 public class PropertiesHandler {
 
     private final Path propertiesPath;
@@ -20,11 +24,26 @@ public class PropertiesHandler {
 
     private final boolean nonNull;
 
-    public static final Path CONFIG_HOME_DIRECTORY = Paths.get("src", "main", "resources").resolve("Stock Blogger Config");
+    public static Path CONFIG_HOME_DIRECTORY = Paths.get("src", "main", "resources").resolve("Stock Blogger Config");
 
-    public static final Path HTML_FILE_DIRECTORY = Paths.get("src", "main", "resources").resolve("html");
+    public static final Path HTML_FILE_DIRECTORY;
 
     static {
+        System.out.println("Are you running from a production environment (one with a .jar file)? If so, respond true.");
+
+        boolean prodEnv = StockBlogger.SCANNER.nextBoolean();
+
+        if (prodEnv) {
+            try {
+                CONFIG_HOME_DIRECTORY = new File(PropertiesHandler.class.getProtectionDomain().getCodeSource().getLocation()
+                    .toURI()).toPath();
+            } catch (URISyntaxException e) {
+                System.out.println("Error while finding config home directory!");
+                e.printStackTrace();
+            }
+        }
+
+
         if (!Files.exists(CONFIG_HOME_DIRECTORY)) {
             try {
                 Files.createDirectory(CONFIG_HOME_DIRECTORY);
@@ -33,6 +52,8 @@ public class PropertiesHandler {
                 e.printStackTrace();
             }
         }
+
+        HTML_FILE_DIRECTORY = CONFIG_HOME_DIRECTORY.getParent().resolve("html");
     }
 
     private PropertiesHandler(String filename, Map<String, String> configValues, boolean nonNull) {
@@ -198,6 +219,18 @@ public class PropertiesHandler {
         builder.append("}");
 
         return builder.toString();
+    }
+
+    public void validateNonNull() {
+        if (this.nonNull) {
+            for (Map.Entry<String, String> entry : this.configValues.entrySet()) {
+                String s = entry.getKey();
+                String s2 = entry.getValue();
+                if (s2 == null || s2.isEmpty() || s2.equals("null")) {
+                    throw new NullPointerException("Property \"" + s + "\" was null/empty! Make sure you go to \"" + this.propertiesPath + "\" and ensure that it is not null!\n If this is due to an API key not being entered, please enter the API key from the provider to test it!");
+                }
+            }
+        }
     }
 
     public static class Builder {
