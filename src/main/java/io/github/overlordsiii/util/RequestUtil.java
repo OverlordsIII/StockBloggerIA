@@ -3,11 +3,14 @@ package io.github.overlordsiii.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.overlordsiii.api.Article;
 import io.github.overlordsiii.request.Request;
 import io.github.overlordsiii.request.Requests;
 import io.github.overlordsiii.stockblogger.StockBlogger;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -160,7 +163,7 @@ public class RequestUtil {
         if (num == -1) {
             System.out.println("What is the stock symbol instead for " + bestGuessName + "?");
 
-            String line = StockBlogger.SCANNER.nextLine()
+            String line = StockBlogger.SCANNER.nextLine();
             // TODO fix manual entering of stock symbols
             return line;
         }
@@ -178,5 +181,32 @@ public class RequestUtil {
         boolean bl = random.nextBoolean();
 
         return StockBlogger.API_KEY.getConfigOption(bl ? "stockAPIKey" : "stockAPIKey2");
+    }
+
+    public static List<Article> getArticles(String symbol) throws IOException, InterruptedException, URISyntaxException {
+        JsonObject obj = Requests.makeNewsRequest(symbol).makeRequest();
+
+        if (!obj.has("data")) {
+            System.out.println("Error when requesting article data!");
+            System.out.println(JsonUtils.objToString(obj));
+            return null;
+        }
+
+        List<Article> articles = new ArrayList<>();
+
+        JsonArray array = obj.getAsJsonArray("data");
+
+        for (JsonElement jsonElement : array) {
+            JsonObject object = jsonElement.getAsJsonObject();
+
+            String title = object.get("title").getAsString();
+            URL url = new URL(object.get("url").getAsString());
+
+            Article article = new Article(title, url.toURI());
+
+            articles.add(article);
+       }
+
+        return articles;
     }
 }

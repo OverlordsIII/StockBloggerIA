@@ -2,6 +2,7 @@ package io.github.overlordsiii.stockblogger;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import io.github.overlordsiii.api.Article;
 import io.github.overlordsiii.api.Stock;
 import io.github.overlordsiii.request.Request;
 import io.github.overlordsiii.request.Requests;
@@ -11,6 +12,7 @@ import io.github.overlordsiii.util.MiscUtil;
 import io.github.overlordsiii.util.RequestUtil;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -20,13 +22,14 @@ public class StockBlogger {
             .addConfigOption("stockAPIKey", "")
             .addConfigOption("chatGptApiKey", "")
             .addConfigOption("stockAPIKey2", "") // for rate limits, we alternate api keys each request
+            .addConfigOption("marketauxApiKey", "")
             .setFileName("api_keys.properties")
             .requireNonNull()
             .build();
 
     public static final Scanner SCANNER = new Scanner(System.in);
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
         // TODO Encapsulate / Abstractify more of the functions in this big main method
         System.out.println("What stock do you want to analyze?");
 
@@ -85,6 +88,8 @@ public class StockBlogger {
                     .forEach(rivalStock::addHistoricalDataPoint);
         }
 
+        List<Article> articles = RequestUtil.getArticles(symbol);
+
         StringBuilder builder = new StringBuilder();
 
         builder.append("======================================\n");
@@ -103,6 +108,11 @@ public class StockBlogger {
         rivalStocks.forEach(stock1 -> {
             builder.append(stock1.getName() + " - " + MiscUtil.getFormattedMap(stock1.getHistoricalData(), integer -> integer + " Months Ago", aDouble -> new JsonPrimitive("$" + aDouble)) + "\n");
         });
+
+        articles.forEach(article -> {
+            builder.append(article.getTitle() + "(" + article.getUrl() + ")\n");
+        });
+
         builder.append("======================================\n");
 
         System.out.println(builder);
