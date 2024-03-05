@@ -20,6 +20,7 @@ public class StockBlogger {
             .addConfigOption("twelveDataApiKey", "")
             .addConfigOption("chatGptApiKey", "")
             .addConfigOption("twelveDataApiKey2", "") // for rate limits, we alternate api keys each request
+            .addConfigOption("marketauxApiKey", "")
             .setFileName("api_keys.properties")
             .requireNonNull()
             .build();
@@ -87,6 +88,8 @@ public class StockBlogger {
                     .forEach(rivalStock::addHistoricalDataPoint);
         }
 
+        List<Article> articles = RequestUtil.getArticles(symbol);
+
         StringBuilder builder = new StringBuilder();
 
         builder.append("======================================\n");
@@ -105,6 +108,11 @@ public class StockBlogger {
         rivalStocks.forEach(stock1 -> {
             builder.append(stock1.getName() + " - " + MiscUtil.getFormattedMap(stock1.getHistoricalData(), integer -> integer + " Months Ago", aDouble -> new JsonPrimitive("$" + aDouble)) + "\n");
         });
+
+        articles.forEach(article -> {
+            builder.append(article.getTitle() + "(" + article.getUrl() + ")\n");
+        });
+
         builder.append("======================================\n");
 
         System.out.println(builder);

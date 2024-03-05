@@ -47,6 +47,10 @@ public class Requests {
         return new Request("https://api.twelvedata.com/time_series?symbol=" + symbol + "&interval=1week&start_date=" + LocalDateTime.now().minusYears(5) + "&apikey=" + RequestUtil.getStockAPIKey(), RequestType.GET, null);
     }
 
+    public static Request makeNewsRequest(String symbol) {
+        return new Request("https://api.marketaux.com/v1/news/all?symbols" + symbol + "&language=en&api_token=" + API_KEY.getConfigOption("marketauxApiKey"), RequestType.GET, null);
+    }
+
     public static void main(String[] args) throws IOException, InterruptedException {
         System.out.println(JsonUtils.objToString(makeHistoricalPriceRequest("AAPL").makeRequest()));
     }
