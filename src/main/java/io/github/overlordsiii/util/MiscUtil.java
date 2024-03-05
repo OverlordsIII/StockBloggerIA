@@ -29,4 +29,14 @@ public class MiscUtil {
 
         return JsonUtils.objToString(object);
     }
+
+    public static boolean isNum(String num) {
+        try {
+            Integer.parseInt(num);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+        return true;
+    }
 }

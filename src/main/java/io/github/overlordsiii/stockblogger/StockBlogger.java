@@ -2,6 +2,7 @@ package io.github.overlordsiii.stockblogger;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import io.github.overlordsiii.api.Article;
 import io.github.overlordsiii.api.Stock;
 import io.github.overlordsiii.request.Request;
 import io.github.overlordsiii.request.Requests;
@@ -11,6 +12,7 @@ import io.github.overlordsiii.util.MiscUtil;
 import io.github.overlordsiii.util.RequestUtil;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -27,7 +29,7 @@ public class StockBlogger {
 
     public static final Scanner SCANNER = new Scanner(System.in);
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
         API_KEY.validateNonNull();
 
         // TODO Encapsulate / Abstractify more of the functions in this big main method
@@ -36,6 +38,10 @@ public class StockBlogger {
         String stock = SCANNER.nextLine();
 
         String symbol = RequestUtil.getStockSymbol(stock);
+
+        if (symbol == null) {
+            throw new NullPointerException("Make sure you choose a public stock!");
+        }
 
         Double price = RequestUtil.getPrice(symbol);
 
@@ -102,11 +108,11 @@ public class StockBlogger {
         });
 
         builder.append("Here is your historical stock data: \n");
-        builder.append(selectedStock.getName() + " - " + MiscUtil.getFormattedMap(selectedStock.getHistoricalData(), integer -> integer + " Months Ago", aDouble -> new JsonPrimitive("$" + aDouble)) + "\n");
+        builder.append(selectedStock.getName() + " - " + MiscUtil.getFormattedMap(selectedStock.getHistoricalData(), integer -> integer + " Weeks Ago", aDouble -> new JsonPrimitive("$" + aDouble)) + "\n");
         builder.append("Now here is the rival historical stock data: \n");
 
         rivalStocks.forEach(stock1 -> {
-            builder.append(stock1.getName() + " - " + MiscUtil.getFormattedMap(stock1.getHistoricalData(), integer -> integer + " Months Ago", aDouble -> new JsonPrimitive("$" + aDouble)) + "\n");
+            builder.append(stock1.getName() + " - " + MiscUtil.getFormattedMap(stock1.getHistoricalData(), integer -> integer + " Weeks Ago", aDouble -> new JsonPrimitive("$" + aDouble)) + "\n");
         });
 
         articles.forEach(article -> {

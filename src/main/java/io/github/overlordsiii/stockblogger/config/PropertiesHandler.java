@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.function.Function;
 
 import javax.swing.text.html.HTML;
@@ -31,7 +32,9 @@ public class PropertiesHandler {
     static {
         System.out.println("Are you running from a production environment (one with a .jar file)? If so, respond true.");
 
-        boolean prodEnv = StockBlogger.SCANNER.nextBoolean();
+        Scanner scanner = new Scanner(System.in);
+
+        boolean prodEnv = scanner.nextBoolean();
 
         if (prodEnv) {
             try {

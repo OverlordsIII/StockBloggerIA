@@ -3,6 +3,7 @@ package io.github.overlordsiii.request;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.overlordsiii.util.JsonUtils;
+import io.github.overlordsiii.util.RequestUtil;
 
 import static io.github.overlordsiii.stockblogger.StockBlogger.API_KEY;
 
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 
 public class Requests {
 
-    private static final String QUERY_RIVAL_PROMPT = "Give me the stock symbols of companies that rival [STOCK_NAME]. Please limit this list to the top 5 rivals and output the list as a numbered list. Please ensure this is the rivals STOCK SYMBOL, not their name. Put the name of the company in parenthesis following, like this: \" [STOCK_SYMBOL] ([STOCK_NAME])\"";
+    private static final String QUERY_RIVAL_PROMPT = "Give me the stock symbols of PUBLIC companies that rival [STOCK_NAME]. Please limit this list to the top 5 rivals and output the list as a numbered list. If the rival is not a public company (one that is not on the NYSE), then omit it. Please ensure this is the rivals STOCK SYMBOL, not their name. Put the name of the company in parenthesis following, like this: \" [STOCK_SYMBOL] ([STOCK_NAME])\"";
 
     public static Request makeStockNameRequest(String symbol) {
         return new Request("https://api.twelvedata.com/stocks?symbol=" + symbol + "&apikey=" + RequestUtil.getStockAPIKey(), RequestType.GET, null);

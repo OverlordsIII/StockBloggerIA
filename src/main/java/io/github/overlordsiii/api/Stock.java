@@ -13,7 +13,7 @@ public class Stock {
 
     private double price;
     // Format 0 (now), 407.48
-    // Format 1 (month ago), etc
+    // Format 1 (week ago), etc
     private Map<Integer, Double> historicalData = new HashMap<>();
 
     public Stock(String symbol, String name, Double price, Map<Integer, Double> historicalData) {

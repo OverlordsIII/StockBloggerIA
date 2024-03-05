@@ -105,6 +105,10 @@ public class RequestUtil {
         for (String rival : rivals) {
             String symbol = getStockSymbol(rival);
 
+            if (symbol == null) {
+                continue;
+            }
+
             Double price = getPrice(symbol);
 
             map.put(symbol, price);
@@ -156,19 +160,20 @@ public class RequestUtil {
             i++;
         }
 
-        System.out.println("Enter the number off the stock you desire (if you know the stock symbol and it's not here, enter -1). If you don't see any companies listed, it is likely your requested company is not public on the stock market");
+        System.out.println("Enter the number off the stock you desire (if you know the stock symbol and it's not here, enter it instead). If you don't see any companies listed, it is likely your requested company is not public on the stock market. Please type \" + null + \" if that is so. ");
 
-        int num = StockBlogger.SCANNER.nextInt();
+        String line = StockBlogger.SCANNER.nextLine().trim();
 
-        if (num == -1) {
-            System.out.println("What is the stock symbol instead for " + bestGuessName + "?");
-
-            String line = StockBlogger.SCANNER.nextLine();
-            // TODO fix manual entering of stock symbols
-            return line;
+        if (MiscUtil.isNum(line)) {
+            int num = Integer.parseInt(line);
+            return array.get(num).getAsJsonObject().get("symbol").getAsString();
         }
 
-        return array.get(num).getAsJsonObject().get("symbol").getAsString();
+        if (line.equalsIgnoreCase("null")) {
+            return null;
+        }
+
+        return line.toUpperCase();
     }
 
     //ensures all spaces are replace
@@ -180,7 +185,7 @@ public class RequestUtil {
         Random random = new Random();
         boolean bl = random.nextBoolean();
 
-        return StockBlogger.API_KEY.getConfigOption(bl ? "stockAPIKey" : "stockAPIKey2");
+        return StockBlogger.API_KEY.getConfigOption(bl ? "twelveDataApiKey" : "twelveDataApiKey2");
     }
 
     public static List<Article> getArticles(String symbol) throws IOException, InterruptedException, URISyntaxException {
