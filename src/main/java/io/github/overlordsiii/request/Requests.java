@@ -49,11 +49,15 @@ public class Requests {
     }
 
     public static Request makeNewsRequest(String symbol) {
-        return new Request("https://api.marketaux.com/v1/news/all?symbols" + symbol + "&language=en&api_token=" + API_KEY.getConfigOption("marketauxApiKey"), RequestType.GET, null);
+        return new Request("https://api.marketaux.com/v1/news/all?symbols=" + symbol + "&language=en&api_token=" + API_KEY.getConfigOption("marketauxApiKey"), RequestType.GET, null);
+    }
+
+    public static Request makeNewsRequestEODHD(String symbol) {
+        return new Request("https://eodhd.com/api/news?s=" + symbol + "&limit=10&api_token=" + API_KEY.getConfigOption("eodhdApiKey") + "&fmt=json", RequestType.GET, null);
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        System.out.println(JsonUtils.objToString(makeHistoricalPriceRequest("AAPL").makeRequest()));
+        System.out.println(JsonUtils.objToString(makeNewsRequestEODHD("AAPL").makeRequestToArray()));
     }
 
 

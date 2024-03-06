@@ -23,6 +23,7 @@ public class StockBlogger {
             .addConfigOption("chatGptApiKey", "")
             .addConfigOption("twelveDataApiKey2", "") // for rate limits, we alternate api keys each request
             .addConfigOption("marketauxApiKey", "")
+            .addConfigOption("eodhdApiKey", "")
             .setFileName("api_keys.properties")
             .requireNonNull()
             .build();
@@ -30,8 +31,6 @@ public class StockBlogger {
     public static final Scanner SCANNER = new Scanner(System.in);
 
     public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
-        API_KEY.validateNonNull();
-
         // TODO Encapsulate / Abstractify more of the functions in this big main method
         System.out.println("What stock do you want to analyze?");
 

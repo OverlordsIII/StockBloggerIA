@@ -8,12 +8,9 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.swing.text.html.HTML;
 
@@ -34,9 +31,7 @@ public class PropertiesHandler {
 
         Scanner scanner = new Scanner(System.in);
 
-        boolean prodEnv = scanner.nextBoolean();
-
-        if (prodEnv) {
+        if (scanner.nextLine().trim().equals("true")) {
             try {
                 CONFIG_HOME_DIRECTORY = new File(PropertiesHandler.class.getProtectionDomain().getCodeSource().getLocation()
                     .toURI()).toPath();
@@ -127,12 +122,32 @@ public class PropertiesHandler {
         }
     }
 
-    private void nonNullCheck() {
+    public void nonNullCheck() {
+        List<String> nullKeys = new ArrayList<>();
+
         configValues.forEach((key, value) -> {
             if ((value == null || value.isEmpty() || value.equals("null")) && nonNull) {
-                throw new NullPointerException("Key \"" + key + "\" was null for Properties Handler \"" + propertiesPath.getFileName() + "\"!");
+                nullKeys.add(key);
+
             }
         });
+
+        if (!nullKeys.isEmpty()) {
+
+            System.out.println("==============================================================================================================================");
+            System.out.println("Your project has some null config values!");
+            System.out.println("Please do not worry, this means you will have to find the config file and then enter the values you want");
+            System.out.println("Depending on the file, this can be anything from API Keys to program variables");
+            System.out.println("This config file can be found here: \"" + this.propertiesPath + "\"");
+            System.out.println("Here are the empty config values you must fix: \n");
+
+            nullKeys.forEach(System.out::println);
+
+            System.out.println("\nPlease contact the creator of this project for more details.");
+            System.out.println("==============================================================================================================================");
+
+            throw new NullPointerException("The following keys: \"" + String.join(", ", nullKeys) + "\" were null for Properties Handler \"" + propertiesPath.getFileName() + "\"!");
+        }
     }
 
     public <T> T getConfigOption(String key, Function<String, T> parser) {
@@ -222,18 +237,6 @@ public class PropertiesHandler {
         builder.append("}");
 
         return builder.toString();
-    }
-
-    public void validateNonNull() {
-        if (this.nonNull) {
-            for (Map.Entry<String, String> entry : this.configValues.entrySet()) {
-                String s = entry.getKey();
-                String s2 = entry.getValue();
-                if (s2 == null || s2.isEmpty() || s2.equals("null")) {
-                    throw new NullPointerException("Property \"" + s + "\" was null/empty! Make sure you go to \"" + this.propertiesPath + "\" and ensure that it is not null!\n If this is due to an API key not being entered, please enter the API key from the provider to test it!");
-                }
-            }
-        }
     }
 
     public static class Builder {

@@ -1,5 +1,6 @@
 package io.github.overlordsiii.request;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.overlordsiii.stockblogger.StockBlogger;
 import io.github.overlordsiii.util.JsonUtils;
@@ -23,6 +24,8 @@ public class Request {
 
     private final JsonObject body;
 
+    private String response;
+
     private final Map<String, String> headers = new HashMap<>();
 
     public Request(String path, RequestType type, JsonObject body) {
@@ -36,7 +39,7 @@ public class Request {
         headers.put(key, value);
     }
 
-    public JsonObject makeRequest() throws IOException, InterruptedException {
+    public String executeRequest() throws IOException, InterruptedException {
         HttpRequest.Builder builder = HttpRequest
                 .newBuilder()
                 .method(type.name(), JsonUtils.toBody(body));
@@ -51,11 +54,23 @@ public class Request {
 
         System.out.println("Made " + this.type.name() + " request to " + this.path + " with body: " + JsonUtils.objToString(this.body));
 
-        JsonObject responseObj = JsonUtils.toJsonObj(response.body());
-        // uncomment when u need to debug
-        //  Main.LOGGER.info("Response: " + JsonUtils.objToString(responseObj));
+        return response.body();
+    }
 
-        return responseObj;
+    public JsonObject makeRequest() throws IOException, InterruptedException {
+        if (this.response == null) {
+            this.response = executeRequest();
+        }
+
+        return JsonUtils.toJsonObj(this.response);
+    }
+
+    public JsonArray makeRequestToArray() throws IOException, InterruptedException {
+        if (this.response == null) {
+            this.response = executeRequest();
+        }
+
+        return JsonUtils.toJsonArray(this.response);
     }
 
     public JsonObject getBody() {

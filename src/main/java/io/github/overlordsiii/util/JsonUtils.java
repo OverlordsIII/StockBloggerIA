@@ -1,8 +1,6 @@
 package io.github.overlordsiii.util;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 
 import java.net.http.HttpRequest;
 
@@ -12,7 +10,7 @@ public class JsonUtils {
             .serializeNulls()
             .create();
 
-    public static String objToString(JsonObject object) {
+    public static String objToString(JsonElement object) {
         return GSON.toJson(object);
     }
 
@@ -26,6 +24,10 @@ public class JsonUtils {
 
     public static JsonObject toJsonObj(String json) {
         return GSON.fromJson(json, JsonObject.class);
+    }
+
+    public static JsonArray toJsonArray(String json) {
+        return GSON.fromJson(json, JsonArray.class);
     }
 
     public static boolean validResponse(String member, JsonObject object) {
