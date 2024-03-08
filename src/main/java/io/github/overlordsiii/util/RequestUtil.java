@@ -11,8 +11,8 @@ import io.github.overlordsiii.stockblogger.StockBlogger;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class RequestUtil {
 
@@ -69,7 +69,7 @@ public class RequestUtil {
 
         if (!response.has("data")) {
             System.out.println("Error when querying!");
-            System.out.println("Response:\n" + JsonUtils.objToString(response));
+            System.out.println("Response:\n" + JsonUtils.elementToString(response));
             return null;
         }
 
@@ -93,7 +93,7 @@ public class RequestUtil {
 
         if (price == null) {
             System.out.println("Error when finding price for symbol: \n" + symbol);
-            System.out.println("Response: \n" + JsonUtils.objToString(object));
+            System.out.println("Response: \n" + JsonUtils.elementToString(object));
         }
 
         return price;
@@ -130,7 +130,7 @@ public class RequestUtil {
 
         if (!response.has("values")) {
             System.out.println("Error when querying historical stock data!");
-            System.out.println("Response:\n" + JsonUtils.objToString(response));
+            System.out.println("Response:\n" + JsonUtils.elementToString(response));
             return null;
         }
 
@@ -189,28 +189,23 @@ public class RequestUtil {
     }
 
     public static List<Article> getArticles(String symbol) throws IOException, InterruptedException, URISyntaxException {
-        JsonObject obj = Requests.makeNewsRequest(symbol).makeRequest();
-
-        if (!obj.has("data")) {
-            System.out.println("Error when requesting article data!");
-            System.out.println(JsonUtils.objToString(obj));
-            return null;
-        }
-
         List<Article> articles = new ArrayList<>();
 
-        JsonArray array = obj.getAsJsonArray("data");
+        JsonArray array = Requests.makeNewsRequestEODHD(symbol).makeRequestToArray();
 
-        for (JsonElement jsonElement : array) {
-            JsonObject object = jsonElement.getAsJsonObject();
+        for (JsonElement element : array) {
+            JsonObject object = element.getAsJsonObject();
 
             String title = object.get("title").getAsString();
-            URL url = new URL(object.get("url").getAsString());
+            URL url = new URL(object.get("link").getAsString());
+            String desc = object.get("content").getAsString();
+            String date = object.get("date").getAsString();
+            LocalDateTime time = LocalDateTime.parse(date.substring(0, date.indexOf("+")));
 
-            Article article = new Article(title, url.toURI());
+            Article article = new Article(title, url.toURI(), desc, time);
 
             articles.add(article);
-       }
+        }
 
         return articles;
     }

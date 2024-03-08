@@ -14,7 +14,6 @@ import io.github.overlordsiii.util.RequestUtil;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.logging.Logger;
 
 public class StockBlogger {
     public static final PropertiesHandler API_KEY = PropertiesHandler
@@ -64,7 +63,7 @@ public class StockBlogger {
                 System.out.println("Chat GPT API Key has exceeded it's current quota! Please update the Chat GPT API Key in api_keys.properties!");
             } else {
                 System.out.println("Error Occurred!");
-                System.out.println("Error: \n" + JsonUtils.objToString(error));
+                System.out.println("Error: \n" + JsonUtils.elementToString(error));
             }
 
             return;

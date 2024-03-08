@@ -57,7 +57,7 @@ public class Requests {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        System.out.println(JsonUtils.objToString(makeNewsRequestEODHD("AAPL").makeRequestToArray()));
+        System.out.println(JsonUtils.elementToString(makeNewsRequestEODHD("AAPL").makeRequestToArray()));
     }
 
 

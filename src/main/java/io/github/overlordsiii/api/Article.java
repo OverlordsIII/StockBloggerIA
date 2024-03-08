@@ -1,6 +1,7 @@
 package io.github.overlordsiii.api;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,9 +13,15 @@ public class Article {
 
     private final List<String> summarizedBulletPoints = new ArrayList<>();
 
-    public Article(String title, URI url) {
+    private final String desc;
+
+    private final LocalDateTime time;
+
+    public Article(String title, URI url, String desc, LocalDateTime time) {
         this.title = title;
         this.url = url;
+        this.desc = desc;
+        this.time = time;
     }
 
     public void addBulletPoint(String bp) {

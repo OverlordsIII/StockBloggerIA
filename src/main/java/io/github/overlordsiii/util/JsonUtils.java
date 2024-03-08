@@ -10,7 +10,7 @@ public class JsonUtils {
             .serializeNulls()
             .create();
 
-    public static String objToString(JsonElement object) {
+    public static String elementToString(JsonElement object) {
         return GSON.toJson(object);
     }
 
@@ -19,7 +19,7 @@ public class JsonUtils {
             return HttpRequest.BodyPublishers.noBody();
         }
 
-        return HttpRequest.BodyPublishers.ofString(objToString(object));
+        return HttpRequest.BodyPublishers.ofString(elementToString(object));
     }
 
     public static JsonObject toJsonObj(String json) {

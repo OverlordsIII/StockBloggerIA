@@ -2,7 +2,6 @@ package io.github.overlordsiii.request;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import io.github.overlordsiii.stockblogger.StockBlogger;
 import io.github.overlordsiii.util.JsonUtils;
 import io.github.overlordsiii.util.RequestUtil;
 
@@ -52,9 +51,13 @@ public class Request {
 
         HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println("Made " + this.type.name() + " request to " + this.path + " with body: " + JsonUtils.objToString(this.body));
+        System.out.println("Made " + this.type.name() + " request to " + this.path + " with body: " + JsonUtils.elementToString(this.body));
 
-        return response.body();
+        String responseStr = response.body();
+
+        this.response = responseStr;
+
+        return responseStr;
     }
 
     public JsonObject makeRequest() throws IOException, InterruptedException {

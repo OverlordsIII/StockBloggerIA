@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class MiscUtil {
@@ -27,7 +26,7 @@ public class MiscUtil {
             object.add(keyMapper.apply(t), valueMapper.apply(k));
         });
 
-        return JsonUtils.objToString(object);
+        return JsonUtils.elementToString(object);
     }
 
     public static boolean isNum(String num) {
