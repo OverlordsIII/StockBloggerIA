@@ -80,6 +80,11 @@ public class StockBlogger {
         for (Map.Entry<String, Double> e : map.entrySet()) {
             String key = e.getKey();
             Double value = e.getValue();
+
+            if (key == null || value == null) {
+                continue;
+            }
+
             rivalStocks.add(new Stock(key, RequestUtil.getName(key), value, RequestUtil.getLogoUrl(key)));
         }
 
