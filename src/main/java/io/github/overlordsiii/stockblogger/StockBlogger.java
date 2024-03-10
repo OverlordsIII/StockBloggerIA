@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.overlordsiii.api.Article;
 import io.github.overlordsiii.api.Stock;
+import io.github.overlordsiii.gui.StockBloggerGUI;
 import io.github.overlordsiii.request.Request;
 import io.github.overlordsiii.request.Requests;
 import io.github.overlordsiii.stockblogger.config.PropertiesHandler;
@@ -21,7 +22,6 @@ public class StockBlogger {
             .addConfigOption("twelveDataApiKey", "")
             .addConfigOption("chatGptApiKey", "")
             .addConfigOption("twelveDataApiKey2", "") // for rate limits, we alternate api keys each request
-            .addConfigOption("marketauxApiKey", "")
             .addConfigOption("eodhdApiKey", "")
             .setFileName("api_keys.properties")
             .requireNonNull()
@@ -48,7 +48,7 @@ public class StockBlogger {
             return;
         }
 
-        Stock selectedStock = new Stock(stock, RequestUtil.getName(symbol), price);
+        Stock selectedStock = new Stock(stock, RequestUtil.getName(symbol), price, RequestUtil.getLogoUrl(symbol));
 
         System.out.println("Executing Chat-GPT Request");
 
@@ -80,7 +80,7 @@ public class StockBlogger {
         for (Map.Entry<String, Double> e : map.entrySet()) {
             String key = e.getKey();
             Double value = e.getValue();
-            rivalStocks.add(new Stock(key, RequestUtil.getName(key), value));
+            rivalStocks.add(new Stock(key, RequestUtil.getName(key), value, RequestUtil.getLogoUrl(key)));
         }
 
         List<Double> doubles = RequestUtil.getAllHistoricalStockData(symbol);
@@ -115,10 +115,15 @@ public class StockBlogger {
 
         articles.forEach(article -> {
             builder.append(article.getTitle() + "(" + article.getUrl() + ")\n");
+            article.getSummarizedBulletPoints().forEach(s -> {
+                builder.append(s + "\n");
+            });
         });
 
         builder.append("======================================\n");
 
         System.out.println(builder);
+
+        JsonUtils.createJsonTestFile(selectedStock, rivalStocks, articles);
     }
 }

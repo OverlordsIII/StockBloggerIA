@@ -11,11 +11,13 @@ public class Article {
 
     private final URI url;
 
-    private final List<String> summarizedBulletPoints = new ArrayList<>();
+    private List<String> summarizedBulletPoints = new ArrayList<>();
 
     private final String desc;
 
     private final LocalDateTime time;
+
+    private String htmlContent;
 
     public Article(String title, URI url, String desc, LocalDateTime time) {
         this.title = title;
@@ -38,5 +40,25 @@ public class Article {
 
     public URI getUrl() {
         return url;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public void setHtmlContent(String htmlContent) {
+        this.htmlContent = htmlContent;
+    }
+
+    public String getHtmlContent() {
+        return htmlContent;
+    }
+
+    public void setBulletPoints(List<String> bps) {
+        this.summarizedBulletPoints = bps;
     }
 }

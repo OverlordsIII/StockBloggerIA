@@ -11,6 +11,8 @@ public class Stock {
 
     private String name;
 
+    private String logoUrl;
+
     private double price;
     // Format 0 (now), 407.48
     // Format 1 (week ago), etc
@@ -23,14 +25,15 @@ public class Stock {
         this.historicalData = historicalData;
     }
 
-    public Stock(String symbol, String name, Double price) {
+    public Stock(String symbol, String name, Double price, String logoUrl) {
         this.symbol = symbol;
         this.name = name;
         this.price = price;
+        this.logoUrl = logoUrl;
     }
 
-    public Stock() {
-
+    public String getLogoUrl() {
+        return logoUrl;
     }
 
     public void setSymbol(String symbol) {

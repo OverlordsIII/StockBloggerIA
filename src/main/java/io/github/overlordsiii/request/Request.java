@@ -25,6 +25,8 @@ public class Request {
 
     private String response;
 
+    private boolean log = true;
+
     private final Map<String, String> headers = new HashMap<>();
 
     public Request(String path, RequestType type, JsonObject body) {
@@ -32,6 +34,14 @@ public class Request {
         this.type = type;
         this.body = body;
         headers.put("Content-Type", "application/json");
+    }
+
+    public Request(String path, RequestType type, JsonObject body, boolean log) {
+        this.path = RequestUtil.urlifyString(path);
+        this.type = type;
+        this.body = body;
+        headers.put("Content-Type", "application/json");
+        this.log = log;
     }
 
     public void addHeader(String key, String value) {
@@ -51,7 +61,9 @@ public class Request {
 
         HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 
-        System.out.println("Made " + this.type.name() + " request to " + this.path + " with body: " + JsonUtils.elementToString(this.body));
+        if (log) {
+            System.out.println("Made " + this.type.name() + " request to " + this.path + " with body: " + JsonUtils.elementToString(this.body));
+        }
 
         String responseStr = response.body();
 

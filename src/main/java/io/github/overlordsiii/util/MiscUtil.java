@@ -1,7 +1,10 @@
 package io.github.overlordsiii.util;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.overlordsiii.api.Article;
+import io.github.overlordsiii.api.Stock;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,4 +41,7 @@ public class MiscUtil {
 
         return true;
     }
+
+
+
 }

@@ -7,10 +7,16 @@ import io.github.overlordsiii.api.Article;
 import io.github.overlordsiii.request.Request;
 import io.github.overlordsiii.request.Requests;
 import io.github.overlordsiii.stockblogger.StockBlogger;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -188,6 +194,13 @@ public class RequestUtil {
         return StockBlogger.API_KEY.getConfigOption(bl ? "twelveDataApiKey" : "twelveDataApiKey2");
     }
 
+    public static String getChatGptApiKey() {
+        Random random = new Random();
+        boolean bl = random.nextBoolean();
+
+        return StockBlogger.API_KEY.getConfigOption(bl ? "chatGptApiKey" : "chatGptApiKey2");
+    }
+
     public static List<Article> getArticles(String symbol) throws IOException, InterruptedException, URISyntaxException {
         List<Article> articles = new ArrayList<>();
 
@@ -204,9 +217,71 @@ public class RequestUtil {
 
             Article article = new Article(title, url.toURI(), desc, time);
 
+
+
+            String htmlContent = getHtmlContent(object.get("link").getAsString());
+            article.setHtmlContent(htmlContent);
+
+            List<String> bps = getBulletPoints(htmlContent, symbol);
+
+            article.setBulletPoints(bps);
+
             articles.add(article);
         }
 
         return articles;
+    }
+
+    public static List<String> getBulletPoints(String html, String symbol) throws IOException, InterruptedException {
+        Document doc = Jsoup.parse(html);
+
+        doc.select("script").remove();
+        doc.select("footer").remove();
+        doc.select("header").remove();
+        doc.select("head").remove();
+        doc.select("meta").remove();
+        doc.select("link").remove();
+
+        html = doc.outerHtml();
+
+        Request req = Requests.requestChatGPTSummary(html, symbol);
+
+        JsonObject response = req.makeRequest();
+
+        if (!response.has("choices")) {
+            System.out.println("Error making request to Chat GPT!");
+            System.out.println(JsonUtils.elementToString(response));
+            return new ArrayList<>();
+        }
+
+        JsonArray array = response.getAsJsonArray("choices");
+        String rawString = array.get(0).getAsJsonObject().get("message").getAsJsonObject().get("content").getAsString();
+
+        return new ArrayList<>(Arrays.asList(rawString.split("\n")));
+    }
+
+    public static String getHtmlContent(String url) throws IOException {
+        System.out.println("Made GET request to " + url);
+        URL urlObj = new URL(url);
+        URLConnection connection = urlObj.openConnection();
+        InputStream stream = connection.getInputStream();
+
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream, "UTF-8")))
+        {
+            String inputLine;
+            StringBuilder stringBuilder = new StringBuilder();
+            while ((inputLine = bufferedReader.readLine()) != null)
+            {
+                stringBuilder.append(inputLine);
+            }
+
+            return stringBuilder.toString();
+        }
+    }
+
+
+    public static String getLogoUrl(String symbol) {
+        return "https://eodhd.com/img/logos/US/" + symbol + ".png";
+
     }
 }
