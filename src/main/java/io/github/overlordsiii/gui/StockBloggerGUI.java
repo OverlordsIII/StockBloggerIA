@@ -102,7 +102,7 @@ public class StockBloggerGUI extends JFrame {
 
 
 	public static void main(String[] args) throws IOException {
-		Path path = PropertiesHandler.CONFIG_HOME_DIRECTORY.resolve("Microsoft.json");
+		Path path = PropertiesHandler.CONFIG_HOME_DIRECTORY.resolve("Nvidia.json");
 
 		createGui(path);
 	}

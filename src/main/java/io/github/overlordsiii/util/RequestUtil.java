@@ -100,9 +100,10 @@ public class RequestUtil {
         if (price == null) {
             System.out.println("Error when finding price for symbol: \n" + symbol);
             System.out.println("Response: \n" + JsonUtils.elementToString(object));
+            return null;
         }
 
-        return price;
+        return Math.round(price * 100.0) / 100.0;
     }
 
     public static Map<String, Double> getRivalPrices(String[] rivals) throws IOException, InterruptedException {

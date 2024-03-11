@@ -14,7 +14,7 @@ public class Requests {
 
     private static final String QUERY_RIVAL_PROMPT = "Give me the stock symbols of PUBLIC companies that rival [STOCK_NAME]. Please limit this list to the top 5 rivals and output the list as a numbered list. If the rival is not a public company (one that is not on the NYSE), then omit it. Please ensure this is the rivals STOCK SYMBOL, not their name. Put the name of the company in parenthesis following, like this: \" [STOCK_SYMBOL] ([STOCK_NAME])\"";
 
-    private static final String QUERY_SUMMARY_PROMPT = "Given the following HTML of various articles, please summarize these articles into bullet points. Please only include relevant data and not any data on the metadata on the article, but rather bullet points strictly relating to the content of the article. Please also ensure that you highlight any references to the company that owns the [SYMBOL] stock symbol if mentioned.";
+    private static final String QUERY_SUMMARY_PROMPT = "Given the following HTML of various articles, please summarize these articles into bullet points. Please only include relevant data and not any data on the metadata on the article, but rather bullet points strictly relating to the content of the article. Please also ensure that you highlight any references to the company that owns the [SYMBOL] stock symbol if mentioned. Please do not output any text that is not strictly the summary of the article. Please only return a summary if the primary topic of the article is [SYMBOL] or any  of [SYMBOL]'s direct competitors.";
 
     public static Request makeStockNameRequest(String symbol) {
         return new Request("https://api.twelvedata.com/stocks?symbol=" + symbol + "&apikey=" + RequestUtil.getStockAPIKey(), RequestType.GET, null);
