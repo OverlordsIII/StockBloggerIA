@@ -1,6 +1,5 @@
-package io.github.overlordsiii.gui;
+package io.github.overlordsiii.stockblogger.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -9,7 +8,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Box;
@@ -19,16 +17,15 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.github.overlordsiii.api.Article;
-import io.github.overlordsiii.api.Stock;
+import io.github.overlordsiii.stockblogger.api.Article;
+import io.github.overlordsiii.stockblogger.api.Stock;
 import io.github.overlordsiii.stockblogger.config.PropertiesHandler;
-import io.github.overlordsiii.util.GuiUtil;
-import io.github.overlordsiii.util.JsonUtils;
+import io.github.overlordsiii.stockblogger.util.GuiUtil;
+import io.github.overlordsiii.stockblogger.util.JsonUtils;
 
 public class StockBloggerGUI extends JFrame {
 

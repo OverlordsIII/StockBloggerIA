@@ -2,15 +2,14 @@ package io.github.overlordsiii.stockblogger;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import io.github.overlordsiii.api.Article;
-import io.github.overlordsiii.api.Stock;
-import io.github.overlordsiii.gui.StockBloggerGUI;
-import io.github.overlordsiii.request.Request;
-import io.github.overlordsiii.request.Requests;
+import io.github.overlordsiii.stockblogger.api.Article;
+import io.github.overlordsiii.stockblogger.api.Stock;
+import io.github.overlordsiii.stockblogger.request.Request;
+import io.github.overlordsiii.stockblogger.request.Requests;
 import io.github.overlordsiii.stockblogger.config.PropertiesHandler;
-import io.github.overlordsiii.util.JsonUtils;
-import io.github.overlordsiii.util.MiscUtil;
-import io.github.overlordsiii.util.RequestUtil;
+import io.github.overlordsiii.stockblogger.util.JsonUtils;
+import io.github.overlordsiii.stockblogger.util.MiscUtil;
+import io.github.overlordsiii.stockblogger.util.RequestUtil;
 
 import java.io.IOException;
 import java.net.URISyntaxException;

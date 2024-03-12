@@ -1,9 +1,8 @@
-package io.github.overlordsiii.api;
+package io.github.overlordsiii.stockblogger.api;
 
-import io.github.overlordsiii.util.MiscUtil;
+import io.github.overlordsiii.stockblogger.util.MiscUtil;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Stock {

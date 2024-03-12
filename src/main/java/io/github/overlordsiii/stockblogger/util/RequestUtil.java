@@ -1,11 +1,11 @@
-package io.github.overlordsiii.util;
+package io.github.overlordsiii.stockblogger.util;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.github.overlordsiii.api.Article;
-import io.github.overlordsiii.request.Request;
-import io.github.overlordsiii.request.Requests;
+import io.github.overlordsiii.stockblogger.api.Article;
+import io.github.overlordsiii.stockblogger.request.Request;
+import io.github.overlordsiii.stockblogger.request.Requests;
 import io.github.overlordsiii.stockblogger.StockBlogger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;

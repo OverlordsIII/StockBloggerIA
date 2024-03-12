@@ -1,4 +1,4 @@
-package io.github.overlordsiii.util.adapter;
+package io.github.overlordsiii.stockblogger.util.adapter;
 
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;

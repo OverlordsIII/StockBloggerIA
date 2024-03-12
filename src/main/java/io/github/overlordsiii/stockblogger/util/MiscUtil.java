@@ -1,10 +1,7 @@
-package io.github.overlordsiii.util;
+package io.github.overlordsiii.stockblogger.util;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import io.github.overlordsiii.api.Article;
-import io.github.overlordsiii.api.Stock;
 
 import java.util.ArrayList;
 import java.util.List;

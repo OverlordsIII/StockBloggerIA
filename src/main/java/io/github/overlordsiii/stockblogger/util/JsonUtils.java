@@ -1,13 +1,12 @@
-package io.github.overlordsiii.util;
+package io.github.overlordsiii.stockblogger.util;
 
 import com.google.gson.*;
-import io.github.overlordsiii.api.Article;
-import io.github.overlordsiii.api.Stock;
+import io.github.overlordsiii.stockblogger.api.Article;
+import io.github.overlordsiii.stockblogger.api.Stock;
 import io.github.overlordsiii.stockblogger.config.PropertiesHandler;
-import io.github.overlordsiii.util.adapter.LocalDateTimeAdapter;
+import io.github.overlordsiii.stockblogger.util.adapter.LocalDateTimeAdapter;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.http.HttpRequest;
 import java.nio.file.Files;
 import java.nio.file.Path;

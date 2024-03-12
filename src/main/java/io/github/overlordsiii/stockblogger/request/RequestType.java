@@ -1,4 +1,4 @@
-package io.github.overlordsiii.request;
+package io.github.overlordsiii.stockblogger.request;
 
 public enum RequestType {
     POST,

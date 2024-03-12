@@ -1,4 +1,4 @@
-package io.github.overlordsiii.api;
+package io.github.overlordsiii.stockblogger.api;
 
 import java.net.URI;
 import java.time.LocalDateTime;

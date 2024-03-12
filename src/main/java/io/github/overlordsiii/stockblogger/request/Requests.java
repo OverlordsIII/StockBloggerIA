@@ -1,9 +1,9 @@
-package io.github.overlordsiii.request;
+package io.github.overlordsiii.stockblogger.request;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import io.github.overlordsiii.util.JsonUtils;
-import io.github.overlordsiii.util.RequestUtil;
+import io.github.overlordsiii.stockblogger.util.JsonUtils;
+import io.github.overlordsiii.stockblogger.util.RequestUtil;
 
 import static io.github.overlordsiii.stockblogger.StockBlogger.API_KEY;
 

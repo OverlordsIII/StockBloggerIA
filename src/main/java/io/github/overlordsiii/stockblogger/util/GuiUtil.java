@@ -1,4 +1,4 @@
-package io.github.overlordsiii.util;
+package io.github.overlordsiii.stockblogger.util;
 
 import java.awt.Component;
 import java.net.MalformedURLException;
