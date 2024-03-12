@@ -54,10 +54,12 @@ public class StockBloggerGUI extends JFrame {
 		JPanel requestedStock = new JPanel();
 		requestedStock.setAlignmentX(Component.LEFT_ALIGNMENT); // Align components to the left
 		requestedStock.setBackground(Color.LIGHT_GRAY);
+		//requestedStock.setPreferredSize(new Dimension(150, requestedStock.getHeight())); // Set preferred size for sidebar
+		//requestedStock.setMaximumSize(new Dimension(150, requestedStock.getHeight())); // Set maximum size for sidebar
 		requestedStock.setLayout(new BoxLayout(requestedStock, BoxLayout.Y_AXIS)); // Use BoxLayout for vertical alignment
 
-		JLabel stockLabel = new JLabel("Selected Stock: " + selectedStock.getSymbol() + " - $" + selectedStock.getPrice(), SwingConstants.CENTER);
-		stockLabel.setFont(new Font("Arial", Font.BOLD, 24));
+		JLabel stockLabel = new JLabel("Selected Stock: " + selectedStock.getName() + " - $" + GuiUtil.getPrice(selectedStock.getPrice()), SwingConstants.CENTER);
+		stockLabel.setFont(new Font("Arial", Font.BOLD, 29));
 		stockLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		requestedStock.add(stockLabel, SwingConstants.CENTER);
 
@@ -68,8 +70,35 @@ public class StockBloggerGUI extends JFrame {
 		}
 
 		JPanel rivalStocks = new JPanel();
-		rivalStocks.setPreferredSize(new Dimension(200, getHeight() - 150)); // Set preferred size for second section
+		rivalStocks.setAlignmentX(Component.LEFT_ALIGNMENT); // Align components to the left
 		rivalStocks.setBackground(Color.GRAY);
+	//	rivalStocks.setPreferredSize(new Dimension(150, rivalStocks.getHeight())); // Set preferred size for sidebar
+	//	rivalStocks.setMaximumSize(new Dimension(150, rivalStocks.getHeight())); // Set maximum size for sidebar
+		rivalStocks.setLayout(new BoxLayout(rivalStocks, BoxLayout.Y_AXIS)); // Use BoxLayout for vertical alignme
+
+		for (int i = 0; i < rivals.size(); i++) {
+			Stock rival = rivals.get(i);
+
+			JPanel rivalStockInitialPanel = new JPanel();
+			rivalStockInitialPanel.setAlignmentX(Component.LEFT_ALIGNMENT); // Align components to the left
+			rivalStockInitialPanel.setBackground(Color.GRAY);
+			//rivalStockInitialPanel.setPreferredSize(new Dimension(150, rivalStockInitialPanel.getHeight())); // Set preferred size for sidebar
+			//rivalStockInitialPanel.setMaximumSize(new Dimension(150, rivalStockInitialPanel.getHeight())); // Set maximum size for sidebar
+			rivalStockInitialPanel.setLayout(new BoxLayout(rivalStockInitialPanel, BoxLayout.Y_AXIS)); // Use BoxLayout for vertical alignme
+
+			JLabel rivalLabel = new JLabel("Rival #" + (i + 1) + ": " + rival.getName() + " - $" + GuiUtil.getPrice(rival.getPrice()), SwingConstants.CENTER);
+			rivalLabel.setFont(new Font("Arial", Font.BOLD, 29));
+			rivalLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+			rivalStockInitialPanel.add(rivalLabel, SwingConstants.CENTER);
+
+			try {
+				GuiUtil.addImage(rivalStockInitialPanel, rival.getLogoUrl()); // Replace URL with your image URL
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			}
+
+			rivalStocks.add(rivalStockInitialPanel);
+		}
 
 		// Add the sections to the sidebar panel
 		sidebarPanel.add(requestedStock);
@@ -102,9 +131,20 @@ public class StockBloggerGUI extends JFrame {
 
 
 	public static void main(String[] args) throws IOException {
-		Path path = PropertiesHandler.CONFIG_HOME_DIRECTORY.resolve("Nvidia.json");
+		Path path = PropertiesHandler.CONFIG_HOME_DIRECTORY;
 
-		createGui(path);
+		Files.walk(path, 1).forEach(path1 -> {
+			if (!path1.toString().endsWith(".json") || Files.isDirectory(path1)) {
+				return;
+			}
+
+
+			try {
+				createGui(path1);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		});
 	}
 
 	public static void createGui(Path jsonFile) throws IOException {

@@ -48,7 +48,7 @@ public class StockBlogger {
             return;
         }
 
-        Stock selectedStock = new Stock(stock, RequestUtil.getName(symbol), price, RequestUtil.getLogoUrl(symbol));
+        Stock selectedStock = new Stock(stock, RequestUtil.getName(symbol), price, RequestUtil.getLogoUrl(symbol.toUpperCase()));
 
         System.out.println("Executing Chat-GPT Request");
 
@@ -85,7 +85,7 @@ public class StockBlogger {
                 continue;
             }
 
-            rivalStocks.add(new Stock(key, RequestUtil.getName(key), value, RequestUtil.getLogoUrl(key)));
+            rivalStocks.add(new Stock(key, RequestUtil.getName(key), value, RequestUtil.getLogoUrl(key.toUpperCase())));
         }
 
         List<Double> doubles = RequestUtil.getAllHistoricalStockData(symbol);

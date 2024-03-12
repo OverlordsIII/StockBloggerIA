@@ -14,6 +14,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -103,7 +105,9 @@ public class RequestUtil {
             return null;
         }
 
-        return Math.round(price * 100.0) / 100.0;
+        String formatted = String.format("%.2f", price);
+
+        return Double.parseDouble(formatted);
     }
 
     public static Map<String, Double> getRivalPrices(String[] rivals) throws IOException, InterruptedException {
@@ -145,11 +149,14 @@ public class RequestUtil {
 
         for (JsonElement element : array) {
             JsonObject object = element.getAsJsonObject();
-            doubles.add(Double.parseDouble(object.get("close").getAsString()));
+            Double doubl = Double.parseDouble(object.get("close").getAsString());
+            String price = String.format("%.2f", doubl);
+            doubles.add(Double.parseDouble(price));
         }
 
         return doubles;
     }
+
     public static String getStockSymbol(String bestGuessName) throws IOException, InterruptedException {
         JsonObject object = Requests.makeSymbolSearchRequest(bestGuessName).makeRequest();
 
@@ -171,12 +178,16 @@ public class RequestUtil {
 
         String line = StockBlogger.SCANNER.nextLine().trim();
 
+        if (line.equals("-1")) {
+            return null;
+        }
+
         if (MiscUtil.isNum(line)) {
             int num = Integer.parseInt(line);
             return array.get(num).getAsJsonObject().get("symbol").getAsString();
         }
 
-        if (line.equalsIgnoreCase("null")) {
+        if (line.equalsIgnoreCase("null") || line.isEmpty()) {
             return null;
         }
 
@@ -282,7 +293,22 @@ public class RequestUtil {
 
 
     public static String getLogoUrl(String symbol) {
-        return "https://eodhd.com/img/logos/US/" + symbol + ".png";
+        String url = "https://eodhd.com/img/logos/US/" + symbol + ".png";
 
+        try {
+            URL urlobj = new URL(url);
+            HttpURLConnection huc = (HttpURLConnection) urlobj.openConnection();
+            huc.setRequestMethod("HEAD");
+            boolean exists = (huc.getResponseCode() == HttpURLConnection.HTTP_OK);
+            if (exists) {
+                return url;
+            } else {
+                return getLogoUrl(symbol.toLowerCase());
+            }
+        } catch (IOException e) {
+            System.out.println("Error when querying logo url for stock: " + symbol);
+            e.printStackTrace();
+            return null;
+        }
     }
 }
