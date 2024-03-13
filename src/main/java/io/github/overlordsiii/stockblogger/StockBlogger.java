@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import io.github.overlordsiii.stockblogger.api.Article;
 import io.github.overlordsiii.stockblogger.api.Stock;
+import io.github.overlordsiii.stockblogger.gui.StockBloggerGUI;
 import io.github.overlordsiii.stockblogger.request.Request;
 import io.github.overlordsiii.stockblogger.request.Requests;
 import io.github.overlordsiii.stockblogger.config.PropertiesHandler;
@@ -127,6 +128,8 @@ public class StockBlogger {
         builder.append("======================================\n");
 
         System.out.println(builder);
+
+        StockBloggerGUI.createGui(selectedStock, rivalStocks, articles);
 
         JsonUtils.createJsonTestFile(selectedStock, rivalStocks, articles);
     }

@@ -298,8 +298,18 @@ public class RequestUtil {
         }
     }
 
-
     public static String getLogoUrl(String symbol) {
+        String url1 = getLogoUrlInternal(symbol.toUpperCase());
+
+        if (url1 != null) {
+            return url1;
+        }
+
+        return getLogoUrlInternal(symbol.toLowerCase());
+    }
+
+
+    public static String getLogoUrlInternal(String symbol) {
         String url = "https://eodhd.com/img/logos/US/" + symbol + ".png";
 
         try {
@@ -310,7 +320,7 @@ public class RequestUtil {
             if (exists) {
                 return url;
             } else {
-                return getLogoUrl(symbol.toLowerCase());
+                return null;
             }
         } catch (IOException e) {
             System.out.println("Error when querying logo url for stock: " + symbol);

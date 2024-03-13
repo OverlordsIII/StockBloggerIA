@@ -142,9 +142,13 @@ public class StockBloggerGUI extends JFrame {
 		graphLabel.setFont(new Font("Arial", Font.BOLD, 29));
 		graphInitialPanel.add(graphLabel);
 
+
+
 		JFreeChart chart = createChart(selectedStock.getHistoricalData());
 		ChartPanel chartPanel = new ChartPanel(chart);
+		JScrollPane graphScroller = new JScrollPane(chartPanel);
 		graphInitialPanel.add(chartPanel);
+		graphInitialPanel.add(graphScroller);
 
 		graphPanel.add(graphInitialPanel);
 
