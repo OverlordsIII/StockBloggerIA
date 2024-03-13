@@ -235,6 +235,10 @@ public class RequestUtil {
 
             List<String> bps = getBulletPoints(htmlContent, symbol);
 
+            if (bps == null) {
+                continue; // article didn't work or didn't have any relevant info
+            }
+
             article.setBulletPoints(bps);
 
             articles.add(article);
@@ -262,11 +266,15 @@ public class RequestUtil {
         if (!response.has("choices")) {
             System.out.println("Error making request to Chat GPT!");
             System.out.println(JsonUtils.elementToString(response));
-            return new ArrayList<>();
+            return null;
         }
 
         JsonArray array = response.getAsJsonArray("choices");
         String rawString = array.get(0).getAsJsonObject().get("message").getAsJsonObject().get("content").getAsString();
+
+        if (rawString.toLowerCase().contains("doesn't contain any articles") || rawString.toLowerCase().contains("doesn't have any articles")) {
+            return null;
+        }
 
         return new ArrayList<>(Arrays.asList(rawString.split("\n")));
     }
