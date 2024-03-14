@@ -30,6 +30,10 @@ public class StockBlogger {
     public static final Scanner SCANNER = new Scanner(System.in);
 
     public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
+        processStock();
+    }
+
+    public static void processStock() throws IOException, InterruptedException, URISyntaxException {
         // TODO Encapsulate / Abstractify more of the functions in this big main method
         System.out.println("What stock do you want to analyze?");
 
@@ -99,6 +103,10 @@ public class StockBlogger {
 
         List<Article> articles = RequestUtil.getArticles(symbol);
 
+        debug(selectedStock, rivalStocks, articles);
+    }
+
+    public static void debug(Stock selectedStock, List<Stock> rivalStocks, List<Article> articles) throws IOException {
         StringBuilder builder = new StringBuilder();
 
         builder.append("======================================\n");
@@ -128,8 +136,6 @@ public class StockBlogger {
         builder.append("======================================\n");
 
         System.out.println(builder);
-
-        StockBloggerGUI.createGui(selectedStock, rivalStocks, articles);
 
         JsonUtils.createJsonTestFile(selectedStock, rivalStocks, articles);
     }

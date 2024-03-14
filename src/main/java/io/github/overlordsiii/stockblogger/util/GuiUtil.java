@@ -9,9 +9,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class GuiUtil {
-	public static void addImage(JPanel label, String imageUrl) throws MalformedURLException {
+	public static void addImage(JPanel label, String imageUrl, String name) throws MalformedURLException {
 		if (imageUrl == null) {
-			System.out.println("Image URL was null for " + label.getName());
+			System.out.println("Image URL was null for " + name);
 			return;
 		}
 

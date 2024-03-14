@@ -1,7 +1,5 @@
 package io.github.overlordsiii.stockblogger.config;
 
-import io.github.overlordsiii.stockblogger.StockBlogger;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -10,9 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import javax.swing.text.html.HTML;
 
 public class PropertiesHandler {
 
@@ -22,7 +17,7 @@ public class PropertiesHandler {
 
     private final boolean nonNull;
 
-    public static Path CONFIG_HOME_DIRECTORY = Paths.get("src", "main", "resources").resolve("Stock Blogger Config");
+    public static Path CONFIG_HOME_DIRECTORY = Paths.get("src", "main", "resources").resolve("Stock Blogger");
 
     public static final Path HTML_FILE_DIRECTORY;
 

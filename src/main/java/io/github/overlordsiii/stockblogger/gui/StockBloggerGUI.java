@@ -11,7 +11,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -78,7 +77,7 @@ public class StockBloggerGUI extends JFrame {
 		requestedStock.add(stockLabel, SwingConstants.CENTER);
 
 		try {
-			GuiUtil.addImage(requestedStock, selectedStock.getLogoUrl()); // Replace URL with your image URL
+			GuiUtil.addImage(requestedStock, selectedStock.getLogoUrl(), selectedStock.getName()); // Replace URL with your image URL
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -107,7 +106,7 @@ public class StockBloggerGUI extends JFrame {
 			rivalStockInitialPanel.add(rivalLabel, SwingConstants.CENTER);
 
 			try {
-				GuiUtil.addImage(rivalStockInitialPanel, rival.getLogoUrl()); // Replace URL with your image URL
+				GuiUtil.addImage(rivalStockInitialPanel, rival.getLogoUrl(), selectedStock.getName()); // Replace URL with your image URL
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
@@ -232,6 +231,8 @@ public class StockBloggerGUI extends JFrame {
 
 		// Add the split pane to the content panel
 		contentPanel.add(splitPane);
+
+
 
 		// Add the content panel to the frame's content pane
 		getContentPane().add(contentPanel);
