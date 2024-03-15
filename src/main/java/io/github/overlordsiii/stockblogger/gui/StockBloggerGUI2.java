@@ -81,17 +81,13 @@ public class StockBloggerGUI2 extends JFrame {
 			@Override
 			public void componentShown(ComponentEvent e) {
 				Dimension size = getSize();
-				int leftPanelWidth = (int) (size.width * 0.15);
+				int leftPanelWidth = (int) (size.width * 0.20);
 				int leftSplitPaneTopHeight = (int) (size.height * 0.37);
 				mainSplitPane.setDividerLocation(leftPanelWidth);
 				leftSplitPane.setDividerLocation(leftSplitPaneTopHeight);
 
 				// TODO fix resizing of images
-				if (e.getComponent() instanceof JLabel jLabel) {
-					if (jLabel.getIcon() instanceof ImageIcon imageIcon) {
-						imageIcon.setImage(imageIcon.getImage().getScaledInstance((int) (0.27 * size.width), (int) (0.27 * size.width), Image.SCALE_DEFAULT));
-					}
-				}
+
 			}
 		});
 

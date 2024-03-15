@@ -1,8 +1,6 @@
 package io.github.overlordsiii.stockblogger.util;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Font;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -35,6 +33,18 @@ public class GuiUtil {
 		ImageIcon icon = new ImageIcon(url);
 
 		JLabel imageIcon = new JLabel(icon);
+
+		imageIcon.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentShown(ComponentEvent e) {
+				Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+				if (e.getComponent() instanceof JLabel jLabel) {
+					if (jLabel.getIcon() instanceof ImageIcon imageIcon) {
+						imageIcon.setImage(imageIcon.getImage().getScaledInstance((int) (0.1 * size.width), (int) (0.1 * size.width), Image.SCALE_DEFAULT));
+					}
+				}
+			}
+		});
 
 		label.add(imageIcon);
 	}
