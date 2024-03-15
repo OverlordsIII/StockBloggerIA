@@ -1,9 +1,6 @@
 package io.github.overlordsiii.stockblogger.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.io.IOException;
@@ -12,12 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
+import javax.swing.*;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -72,13 +64,7 @@ public class StockBloggerGUI2 extends JFrame {
 		// Add the main split pane to the content panel
 		contentPanel.add(mainSplitPane, BorderLayout.CENTER);
 
-		Box	box = Box.createVerticalBox();
-
-		box.add(GuiUtil.stockToPanel(selectedStock, topInnerPanel));
-
-		JScrollPane scroller = new JScrollPane(box);
-		scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		topInnerPanel.add(scroller);
+		topInnerPanel.add(GuiUtil.stockToPanel(selectedStock, topInnerPanel));
 
 		Box rivalsBox = Box.createVerticalBox();
 
@@ -96,9 +82,16 @@ public class StockBloggerGUI2 extends JFrame {
 			public void componentShown(ComponentEvent e) {
 				Dimension size = getSize();
 				int leftPanelWidth = (int) (size.width * 0.15);
-				int leftSplitPaneTopHeight = (int) (size.height * 0.2);
+				int leftSplitPaneTopHeight = (int) (size.height * 0.37);
 				mainSplitPane.setDividerLocation(leftPanelWidth);
 				leftSplitPane.setDividerLocation(leftSplitPaneTopHeight);
+
+				// TODO fix resizing of images
+				if (e.getComponent() instanceof JLabel jLabel) {
+					if (jLabel.getIcon() instanceof ImageIcon imageIcon) {
+						imageIcon.setImage(imageIcon.getImage().getScaledInstance((int) (0.27 * size.width), (int) (0.27 * size.width), Image.SCALE_DEFAULT));
+					}
+				}
 			}
 		});
 
