@@ -35,28 +35,20 @@ public class StockBlogger {
 
     public static void processStock() throws IOException, InterruptedException, URISyntaxException {
         // TODO Encapsulate / Abstractify more of the functions in this big main method
-        System.out.println("What stock do you want to analyze?");
 
-        String stock = SCANNER.nextLine();
+        Stock selectedStock = requestUserStock();
 
-        String symbol = RequestUtil.getStockSymbol(stock);
+        List<Stock> rivalStocks = requestUserRivalStocks(selectedStock);
 
-        if (symbol == null) {
-            throw new NullPointerException("Make sure you choose a public stock!");
-        }
+        List<Article> articles = RequestUtil.getArticles(selectedStock.getSymbol());
 
-        Double price = RequestUtil.getPrice(symbol);
+        debug(selectedStock, rivalStocks, articles);
+    }
 
-        if (price == null) {
-            System.out.println("Error when parsing response!");
-            return;
-        }
-
-        Stock selectedStock = new Stock(stock, RequestUtil.getName(symbol), price, RequestUtil.getLogoUrl(symbol.toUpperCase()));
-
+    public static List<Stock> requestUserRivalStocks(Stock selectedStock) throws IOException, InterruptedException {
         System.out.println("Executing Chat-GPT Request");
 
-        Request chatgpt = Requests.requestChatGPTRivals(stock);
+        Request chatgpt = Requests.requestChatGPTRivals(selectedStock.getName());
 
         JsonObject response = chatgpt.makeRequest();
 
@@ -70,7 +62,7 @@ public class StockBlogger {
                 System.out.println("Error: \n" + JsonUtils.elementToString(error));
             }
 
-            return;
+            throw new RuntimeException();
         }
 
 
@@ -92,18 +84,36 @@ public class StockBlogger {
             rivalStocks.add(new Stock(key, RequestUtil.getName(key), value, RequestUtil.getLogoUrl(key.toUpperCase())));
         }
 
-        List<Double> doubles = RequestUtil.getAllHistoricalStockData(symbol);
+        List<Double> doubles = RequestUtil.getAllHistoricalStockData(selectedStock.getSymbol());
 
         Objects.requireNonNull(doubles).forEach(selectedStock::addHistoricalDataPoint);
 
         for (Stock rivalStock : rivalStocks) {
             Objects.requireNonNull(RequestUtil.getAllHistoricalStockData(rivalStock.getSymbol()))
-                    .forEach(rivalStock::addHistoricalDataPoint);
+                .forEach(rivalStock::addHistoricalDataPoint);
         }
 
-        List<Article> articles = RequestUtil.getArticles(symbol);
+        return rivalStocks;
+    }
 
-        debug(selectedStock, rivalStocks, articles);
+    public static Stock requestUserStock() throws IOException, InterruptedException {
+        System.out.println("What stock do you want to analyze?");
+
+        String stock = SCANNER.nextLine();
+
+        String symbol = RequestUtil.getStockSymbol(stock);
+
+        if (symbol == null) {
+            throw new NullPointerException("Make sure you choose a public stock!");
+        }
+
+        Double price = RequestUtil.getPrice(symbol);
+
+        if (price == null) {
+            throw new RuntimeException("Error when parsing response!");
+        }
+
+        return new Stock(symbol, RequestUtil.getName(symbol), price, RequestUtil.getLogoUrl(symbol.toUpperCase()));
     }
 
     public static void debug(Stock selectedStock, List<Stock> rivalStocks, List<Article> articles) throws IOException {

@@ -31,6 +31,15 @@ public class RequestUtil {
         return null;
     }
 
+    public static boolean startsWithNumber(String input) {
+        if (input == null || input.isEmpty()) {
+            return false;
+        }
+
+        char firstChar = input.charAt(0);
+        return Character.isDigit(firstChar);
+    }
+
     public static String[] getRivals(JsonObject response) {
         JsonArray choices = response.getAsJsonArray("choices");
         JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
@@ -43,6 +52,10 @@ public class RequestUtil {
         String[] rivals = new String[unedited.length];
 
         for (int i = 0; i < unedited.length; i++) {
+            if (!startsWithNumber(unedited[i].trim())) {
+                continue;
+            }
+
             List<String> company = new ArrayList<>(Arrays.asList(unedited[i].split("\\s+")));
             company.remove(0);
             List<String> company2 = new ArrayList<>();

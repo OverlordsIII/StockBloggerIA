@@ -1,11 +1,10 @@
 plugins {
     id 'java'
     id 'application'
-    id 'org.openjfx.javafxplugin' version '0.1.0'
 }
 
-group = 'org.example'
-version = '1.0-SNAPSHOT'
+group = 'io.github.overlordsiii.stockblogger'
+version = '1.0'
 
 repositories {
     mavenCentral()
@@ -21,10 +20,6 @@ dependencies {
     implementation 'org.jfree:jfreechart:1.5.3'
 }
 
-javafx {
-    version = '16'
-    modules = ['javafx.controls', 'javafx.base', 'javafx.fxml', 'javafx.graphics', 'javafx.media', 'javafx.swing']
-}
 
 test {
     useJUnitPlatform()
