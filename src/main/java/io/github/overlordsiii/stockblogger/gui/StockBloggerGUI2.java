@@ -72,7 +72,13 @@ public class StockBloggerGUI2 extends JFrame {
 		// Add the main split pane to the content panel
 		contentPanel.add(mainSplitPane, BorderLayout.CENTER);
 
-		topInnerPanel.add(GuiUtil.stockToPanel(selectedStock, topInnerPanel));
+		Box	box = Box.createVerticalBox();
+
+		box.add(GuiUtil.stockToPanel(selectedStock, topInnerPanel));
+
+		JScrollPane scroller = new JScrollPane(box);
+		scroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		topInnerPanel.add(scroller);
 
 		Box rivalsBox = Box.createVerticalBox();
 
