@@ -43,6 +43,8 @@ public class StockBlogger {
         List<Article> articles = RequestUtil.getArticles(selectedStock.getSymbol());
 
         debug(selectedStock, rivalStocks, articles);
+
+        StockBloggerGUI.createGui(selectedStock, rivalStocks, articles);
     }
 
     public static List<Stock> requestUserRivalStocks(Stock selectedStock) throws IOException, InterruptedException {

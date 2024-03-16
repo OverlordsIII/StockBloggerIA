@@ -4,19 +4,36 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
 
+import io.github.overlordsiii.stockblogger.api.Article;
 import io.github.overlordsiii.stockblogger.api.Stock;
 import io.github.overlordsiii.stockblogger.config.PropertiesHandler;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 public class GuiUtil {
 	public static void addImage(Container label, String imageUrl, String name) throws MalformedURLException {
@@ -40,7 +57,7 @@ public class GuiUtil {
 				Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
 				if (e.getComponent() instanceof JLabel jLabel) {
 					if (jLabel.getIcon() instanceof ImageIcon imageIcon) {
-						imageIcon.setImage(imageIcon.getImage().getScaledInstance((int) (0.1 * size.width), (int) (0.1 * size.width), Image.SCALE_DEFAULT));
+						imageIcon.setImage(imageIcon.getImage().getScaledInstance((int) (0.05 * size.width), (int) (0.05 * size.width), Image.SCALE_DEFAULT));
 					}
 				}
 			}
@@ -54,16 +71,9 @@ public class GuiUtil {
 
 		TitledBorder border = BorderFactory.createTitledBorder(stock.getName());
 
-		border.setTitleFont(new Font("Arial", Font.BOLD, 14));
+		border.setTitleFont(new Font("Arial", Font.BOLD, 18));
 
 		box.add(Box.createVerticalStrut(20));
-
-		box.addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentResized(ComponentEvent e) {
-				border.setTitleFont(new Font("Arial", Font.BOLD, 18));
-			}
-		});
 
 		box.setBorder(border);
 
@@ -73,10 +83,141 @@ public class GuiUtil {
 
 
 		JLabel label = new JLabel("Price: $" + getPrice(stock.getPrice()));
+		label.setFont(new Font("Arial", Font.BOLD, 18));
 		label.setAlignmentX(Component.LEFT_ALIGNMENT);
 		box.add(label);
 
 		return box;
+	}
+
+	public static void addRivals(JPanel bottomInnerPanel, List<Stock> rivals) throws MalformedURLException {
+		Box rivalsBox = Box.createVerticalBox();
+
+		for (Stock rival : rivals) {
+			rivalsBox.add(GuiUtil.stockToPanel(rival, rivalsBox));
+		}
+
+		JScrollPane scrollPane = new JScrollPane(rivalsBox);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		bottomInnerPanel.add(scrollPane);
+	}
+
+	public static void addGraph(JPanel graphPanel, List<Stock> stocks) {
+		JPanel graphInitialPanel = new JPanel();
+		graphInitialPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		graphInitialPanel.setBackground(Color.LIGHT_GRAY);
+		graphInitialPanel.setLayout(new BoxLayout(graphInitialPanel, BoxLayout.Y_AXIS));
+
+		JFreeChart chart = createChart(stocks);
+		ChartPanel chartPanel = new ChartPanel(chart);
+
+		chartPanel.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentShown(ComponentEvent e) {
+				Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+				int length = (int) (0.4 * size.width);
+				int height = (int) (0.5 * size.height);
+				chartPanel.setSize(length, height);
+			}
+		});
+
+		JScrollPane graphScroller = new JScrollPane(chartPanel);
+		graphInitialPanel.add(chartPanel);
+		graphInitialPanel.add(graphScroller);
+
+		graphPanel.add(graphInitialPanel);
+	}
+
+	public static JFreeChart createChart(List<Stock> stocks) {
+		XYSeriesCollection dataset = new XYSeriesCollection();
+
+		for (Stock stock : stocks) {
+			XYSeries series = new XYSeries(stock.getName());
+
+			Map<Integer, Double> data = MiscUtil.reverseMap(stock.getHistoricalData());
+
+			for (Map.Entry<Integer, Double> entry : data.entrySet()) {
+				series.add(entry.getKey(), entry.getValue());
+			}
+
+			dataset.addSeries(series);
+		}
+		// Create the chart
+		JFreeChart chart = ChartFactory.createXYLineChart(
+			"Stock Price Over Time",  // chart title
+			"Weeks",                  // x-axis label
+			"Price",                  // y-axis label
+			dataset                  // data
+		);
+
+		return chart;
+	}
+
+	public static void addArticles(JPanel articlePanel, List<Article> articles) {
+		articlePanel.setBackground(Color.WHITE);
+		articlePanel.setLayout(new BoxLayout(articlePanel, BoxLayout.Y_AXIS));
+
+		JLabel articleLabel = new JLabel("Article Summaries");
+		articleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		articleLabel.setFont(new Font("Arial", Font.BOLD, 29));
+		articlePanel.add(articleLabel);
+
+
+
+		JPanel articleDisplayPanel = new JPanel();
+		articleDisplayPanel.setAlignmentX(Component.CENTER_ALIGNMENT); // Align components to the left
+		articleDisplayPanel.setBackground(Color.GRAY);
+		articleDisplayPanel.setLayout(new BoxLayout(articleDisplayPanel, BoxLayout.Y_AXIS)); // Use BoxLayout for vertical alignme
+
+		JScrollPane scrollPane1 = new JScrollPane(articleDisplayPanel);
+
+		for (Article article : articles) {
+			// Create a Box container for each article
+			Box articleBox = Box.createVerticalBox();
+
+			// Create a JLabel for the article title
+			JLabel titleLabel = new JLabel(article.getTitle());
+			titleLabel.setFont(new Font("Arial", Font.BOLD, 16)); // Example font and size
+			titleLabel.setForeground(Color.BLUE.darker());
+			titleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			titleLabel.addMouseListener(new MouseAdapter() {
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					try {
+						Desktop.getDesktop().browse(article.getUrl());
+					} catch (IOException ex) {
+						System.out.println("Error when clicking on link \"" + article.getUrl() + "\"!");
+						ex.printStackTrace();
+					}
+				}
+			});
+			articleBox.add(titleLabel);
+
+			// Add bullet points using JTextArea
+			JTextArea bulletPointsArea = new JTextArea();
+			bulletPointsArea.setEditable(false); // Make it non-editable
+			bulletPointsArea.setLineWrap(true);
+			bulletPointsArea.setWrapStyleWord(true);
+
+			// Add each bullet point to the JTextArea
+			for (String bulletPoint : article.getSummarizedBulletPoints()) {
+				bulletPointsArea.append(" " + bulletPoint + "\n"); // Using "•" as a bullet symbol
+			}
+
+			// Create a scroll pane for the bullet points area
+			JScrollPane scrollPane = new JScrollPane(bulletPointsArea);
+			scrollPane.setPreferredSize(new Dimension(300, 150)); // Example preferred size
+
+			// Add the scroll pane to the article box
+			articleBox.add(scrollPane);
+
+			// Add some vertical space between articles
+			articleBox.add(Box.createVerticalStrut(10));
+
+			// Add the Box container to the articlePanel
+			articleDisplayPanel.add(articleBox);
+		}
+		articlePanel.add(scrollPane1);
 	}
 
 	public static String getPrice(Double twoDigitPrice) {
