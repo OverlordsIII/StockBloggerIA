@@ -75,7 +75,7 @@ public class StockBloggerGUI extends JFrame {
 			public void componentShown(ComponentEvent e) {
 				Dimension size = getSize();
 				int leftPanelWidth = (int) (size.width * 0.12);
-				int leftSplitPaneTopHeight = (int) (size.height * 0.2);
+				int leftSplitPaneTopHeight = (int) (size.height * 0.23);
 				mainSplitPane.setDividerLocation(leftPanelWidth);
 				leftSplitPane.setDividerLocation(leftSplitPaneTopHeight);
 				rightSplitPane.setDividerLocation(((int) (size.height * 0.55)));

@@ -9,6 +9,8 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,6 +34,10 @@ import io.github.overlordsiii.stockblogger.config.PropertiesHandler;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTick;
+import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -49,19 +55,10 @@ public class GuiUtil {
 
 		ImageIcon icon = new ImageIcon(url);
 
-		JLabel imageIcon = new JLabel(icon);
+		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+		icon.setImage(icon.getImage().getScaledInstance((int) (0.075 * size.width), (int) (0.075 * size.width), Image.SCALE_DEFAULT));
 
-		imageIcon.addComponentListener(new ComponentAdapter() {
-			@Override
-			public void componentShown(ComponentEvent e) {
-				Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
-				if (e.getComponent() instanceof JLabel jLabel) {
-					if (jLabel.getIcon() instanceof ImageIcon imageIcon) {
-						imageIcon.setImage(imageIcon.getImage().getScaledInstance((int) (0.05 * size.width), (int) (0.05 * size.width), Image.SCALE_DEFAULT));
-					}
-				}
-			}
-		});
+		JLabel imageIcon = new JLabel(icon);
 
 		label.add(imageIcon);
 	}
@@ -134,10 +131,12 @@ public class GuiUtil {
 		for (Stock stock : stocks) {
 			XYSeries series = new XYSeries(stock.getName());
 
-			Map<Integer, Double> data = MiscUtil.reverseMap(stock.getHistoricalData());
+			Map<LocalDateTime, Double> data = stock.getHistoricalData(); //MiscUtil.reverseMap(stock.getHistoricalData());
 
-			for (Map.Entry<Integer, Double> entry : data.entrySet()) {
-				series.add(entry.getKey(), entry.getValue());
+			List<Map.Entry<LocalDateTime, Double>> list = new ArrayList<>(data.entrySet());
+
+			for (int i = 0; i < list.size(); i++) {
+				series.add(i, list.get(i).getValue());
 			}
 
 			dataset.addSeries(series);

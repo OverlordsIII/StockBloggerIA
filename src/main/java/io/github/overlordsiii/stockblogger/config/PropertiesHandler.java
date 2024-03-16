@@ -26,7 +26,9 @@ public class PropertiesHandler {
 
         Scanner scanner = new Scanner(System.in);
 
-        if (scanner.nextLine().trim().equals("true")) {
+        String nextLine = scanner.nextLine().trim();
+
+        if (nextLine.equals("true") || nextLine.equals("yes")) {
             try {
                 CONFIG_HOME_DIRECTORY = new File(PropertiesHandler.class.getProtectionDomain().getCodeSource().getLocation()
                     .toURI()).toPath();

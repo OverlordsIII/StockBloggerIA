@@ -24,25 +24,37 @@ public class MiscUtil {
         return keys.get(keys.size() - 1);
     }
 
-    public static <K> Map<Integer, K> reverseMap(Map<Integer, K> map) {
-        Integer lastKey = MiscUtil.getLastKey(map);
+    public static <T, K> T getFirstKey(Map<T, K> map) {
+        if (map.isEmpty()) {
+            return null;
+        }
+
+        List<T> keys = new ArrayList<>(map.keySet());
+
+        return keys.get(0);
+    }
+
+    public static <T, K> Map<T, K> reverseMap(Map<T, K> map) {
+        T lastKey = MiscUtil.getLastKey(map);
 
         if (lastKey == null) {
             return null;
         }
 
-        Map<Integer, K> treeMap = new TreeMap<>(Collections.reverseOrder());
+        Map<T, K> treeMap = new TreeMap<>(Collections.reverseOrder());
 
         treeMap.putAll(map);
 
         List<K> reversedValues = new ArrayList<>(treeMap.values());
 
+        List<T> reversedKeys = new ArrayList<>(treeMap.keySet());
+
         // since we store map in inverted order, we got to invert now
         // in newmap, we will put data starting with the oldest data
-        Map<Integer, K> newData = new HashMap<>();
+        Map<T, K> newData = new HashMap<>();
 
-        for (int i = 0; i <= lastKey; i++) {
-            newData.put(i, reversedValues.get(i));
+        for (int i = 0; i <= map.size(); i++) {
+            newData.put(reversedKeys.get(i), reversedValues.get(i));
         }
 
         return newData;

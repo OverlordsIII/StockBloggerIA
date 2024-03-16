@@ -131,11 +131,11 @@ public class StockBlogger {
         });
 
         builder.append("Here is your historical stock data: \n");
-        builder.append(selectedStock.getName() + " - " + MiscUtil.getFormattedMap(selectedStock.getHistoricalData(), integer -> integer + " Weeks Ago", aDouble -> new JsonPrimitive("$" + aDouble)) + "\n");
+        builder.append(selectedStock.getName() + " - " + MiscUtil.getFormattedMap(selectedStock.getHistoricalData(), String::valueOf, aDouble -> new JsonPrimitive("$" + aDouble)) + "\n");
         builder.append("Now here is the rival historical stock data: \n");
 
         rivalStocks.forEach(stock1 -> {
-            builder.append(stock1.getName() + " - " + MiscUtil.getFormattedMap(stock1.getHistoricalData(), integer -> integer + " Weeks Ago", aDouble -> new JsonPrimitive("$" + aDouble)) + "\n");
+            builder.append(stock1.getName() + " - " + MiscUtil.getFormattedMap(stock1.getHistoricalData(), String::valueOf, aDouble -> new JsonPrimitive("$" + aDouble)) + "\n");
         });
 
         articles.forEach(article -> {

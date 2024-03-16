@@ -2,8 +2,11 @@ package io.github.overlordsiii.stockblogger.api;
 
 import io.github.overlordsiii.stockblogger.util.MiscUtil;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Stock {
     private String symbol;
@@ -15,9 +18,9 @@ public class Stock {
     private double price;
     // Format 0 (now), 407.48
     // Format 1 (week ago), etc
-    private Map<Integer, Double> historicalData = new HashMap<>();
+    private Map<LocalDateTime, Double> historicalData = new TreeMap<>();
 
-    public Stock(String symbol, String name, Double price, Map<Integer, Double> historicalData) {
+    public Stock(String symbol, String name, Double price, Map<LocalDateTime, Double> historicalData) {
         this.symbol = symbol;
         this.name = name;
         this.price = price;
@@ -48,13 +51,13 @@ public class Stock {
     }
 
     public void addHistoricalDataPoint(double data) {
-        Integer lastKey = MiscUtil.getLastKey(this.historicalData);
+        LocalDateTime lastKey = MiscUtil.getFirstKey(this.historicalData);
 
         if (lastKey == null) {
-            lastKey = -1;
+            lastKey = LocalDateTime.now().plusWeeks(1);
         }
 
-        historicalData.put(1 + lastKey, data);
+        historicalData.put(lastKey.minusWeeks(1), data);
     }
 
     public String getSymbol() {
@@ -69,7 +72,7 @@ public class Stock {
         return price;
     }
 
-    public Map<Integer, Double> getHistoricalData() {
+    public Map<LocalDateTime, Double> getHistoricalData() {
         return historicalData;
     }
 }
