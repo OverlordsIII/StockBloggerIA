@@ -72,7 +72,7 @@ public class StockBloggerGUI extends JFrame {
 
 		addComponentListener(new ComponentAdapter() {
 			@Override
-			public void componentShown(ComponentEvent e) {
+			public void componentResized(ComponentEvent e) {
 				Dimension size = getSize();
 				int leftPanelWidth = (int) (size.width * 0.12);
 				int leftSplitPaneTopHeight = (int) (size.height * 0.23);

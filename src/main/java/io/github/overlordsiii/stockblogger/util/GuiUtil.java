@@ -9,10 +9,12 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -32,12 +35,21 @@ import io.github.overlordsiii.stockblogger.api.Article;
 import io.github.overlordsiii.stockblogger.api.Stock;
 import io.github.overlordsiii.stockblogger.config.PropertiesHandler;
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartMouseEvent;
+import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.DateTickUnit;
+import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTick;
 import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.entity.XYItemEntity;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.TimeSeriesDataItem;
+import org.jfree.data.time.Week;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -126,28 +138,33 @@ public class GuiUtil {
 	}
 
 	public static JFreeChart createChart(List<Stock> stocks) {
-		XYSeriesCollection dataset = new XYSeriesCollection();
+		TimeSeriesCollection dataset = new TimeSeriesCollection();
 
 		for (Stock stock : stocks) {
-			XYSeries series = new XYSeries(stock.getName());
+			TimeSeries series = new TimeSeries(stock.getName());
 
-			Map<LocalDateTime, Double> data = stock.getHistoricalData(); //MiscUtil.reverseMap(stock.getHistoricalData());
+			Map<LocalDateTime, Double> data = stock.getHistoricalData();
 
-			List<Map.Entry<LocalDateTime, Double>> list = new ArrayList<>(data.entrySet());
-
-			for (int i = 0; i < list.size(); i++) {
-				series.add(i, list.get(i).getValue());
+			// Add data to the series
+			for (Map.Entry<LocalDateTime, Double> entry : data.entrySet()) {
+				series.add(new Week(Timestamp.valueOf(entry.getKey())), entry.getValue());
 			}
 
 			dataset.addSeries(series);
 		}
+
 		// Create the chart
-		JFreeChart chart = ChartFactory.createXYLineChart(
+		JFreeChart chart = ChartFactory.createTimeSeriesChart(
 			"Stock Price Over Time",  // chart title
-			"Weeks",                  // x-axis label
+			"Date",                  // x-axis label
 			"Price",                  // y-axis label
 			dataset                  // data
 		);
+
+		// Customize the x-axis to display only years
+		DateAxis xAxis = (DateAxis) chart.getXYPlot().getDomainAxis();
+		xAxis.setDateFormatOverride(new SimpleDateFormat("yyyy")); // Set date format to display only year
+		xAxis.setTickUnit(new DateTickUnit(DateTickUnitType.YEAR, 1)); // Set tick unit to one year
 
 		return chart;
 	}
