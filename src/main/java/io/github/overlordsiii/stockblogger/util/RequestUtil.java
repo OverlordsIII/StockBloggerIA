@@ -15,9 +15,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -59,7 +61,7 @@ public class RequestUtil {
             }
 
             List<String> company = new ArrayList<>(Arrays.asList(unedited[i].split("\\s+")));
-            company.remove(0);
+            company.removeFirst();
             List<String> company2 = new ArrayList<>();
             for (String s : company) {
                 if (s.startsWith("(")) {
@@ -207,25 +209,7 @@ public class RequestUtil {
 
     public static Map<String, Double> getRivalPrices(List<String> rivals) throws IOException, InterruptedException {
         return getRivalPricesInternal(new HashMap<>(), rivals);
-        /*
-        Map<String, Double> map = new HashMap<>();
-
-        for (String rival : rivals) {
-            String symbol = getStockSymbol(rival);
-
-            if (symbol == null) {
-                continue;
-            }
-
-            Double price = getPrice(symbol);
-
-            map.put(symbol, price);
-        }
-
-        return map;
-
-         */
-    }
+	}
 
     // returns stock data with
     // first element stock price right now
@@ -277,7 +261,7 @@ public class RequestUtil {
             JsonObject object = element.getAsJsonObject();
 
             String title = object.get("title").getAsString();
-            URL url = new URL(object.get("link").getAsString());
+            URL url = URI.create(object.get("link").getAsString()).toURL();
             String desc = object.get("content").getAsString();
             String date = object.get("date").getAsString();
             LocalDateTime time = LocalDateTime.parse(date.substring(0, date.indexOf("+")));
@@ -341,7 +325,7 @@ public class RequestUtil {
         URLConnection connection = urlObj.openConnection();
         InputStream stream = connection.getInputStream();
 
-        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream, "UTF-8")))
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)))
         {
             String inputLine;
             StringBuilder stringBuilder = new StringBuilder();
@@ -369,7 +353,7 @@ public class RequestUtil {
         String url = "https://eodhd.com/img/logos/US/" + symbol + ".png";
 
         try {
-            URL urlobj = new URL(url);
+            URL urlobj = URI.create(url).toURL();
             HttpURLConnection huc = (HttpURLConnection) urlobj.openConnection();
             huc.setRequestMethod("HEAD");
             boolean exists = (huc.getResponseCode() == HttpURLConnection.HTTP_OK);

@@ -87,7 +87,7 @@ public class JsonUtils {
         object.add("rivals", rivalsArray);
         object.add("articles", articlesArray);
 
-        Path path = PropertiesHandler.CONFIG_HOME_DIRECTORY.resolve(selectedStock.getSymbol() + ".json");
+        Path path = PropertiesHandler.getConfigHomeDirectory().resolve(selectedStock.getSymbol() + ".json");
 
         String json = elementToString(object);
 

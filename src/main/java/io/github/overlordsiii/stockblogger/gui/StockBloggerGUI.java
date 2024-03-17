@@ -82,7 +82,7 @@ public class StockBloggerGUI extends JFrame {
 	}
 
 	public static void main(String[] args) throws IOException {
-		Path path = PropertiesHandler.CONFIG_HOME_DIRECTORY;
+		Path path = PropertiesHandler.getConfigHomeDirectory();
 
 		Files.walk(path, 1).forEach(path1 -> {
 			if (!path1.toString().endsWith(".json") || Files.isDirectory(path1)) {

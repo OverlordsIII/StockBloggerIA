@@ -1,13 +1,18 @@
 package io.github.overlordsiii.stockblogger.config;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 public class PropertiesHandler {
 
@@ -17,9 +22,13 @@ public class PropertiesHandler {
 
     private final boolean nonNull;
 
-    public static Path CONFIG_HOME_DIRECTORY = Paths.get("src", "main", "resources").resolve("Stock Blogger");
+    private static final String APP_NAME = "Stock Blogger";
+
+    private static Path CONFIG_HOME_DIRECTORY = Paths.get("src", "main", "resources").resolve(APP_NAME);
 
     public static final Path HTML_FILE_DIRECTORY;
+
+    private static final boolean PRODUCTION_ENV;
 
     static {
         System.out.println("Are you running from a production environment (one with a .jar file)? If so, respond true.");
@@ -36,6 +45,10 @@ public class PropertiesHandler {
                 System.out.println("Error while finding config home directory!");
                 e.printStackTrace();
             }
+            PRODUCTION_ENV = true;
+            copyResourcesFilesToProdEnv();
+        } else {
+            PRODUCTION_ENV = false;
         }
 
 
@@ -55,6 +68,8 @@ public class PropertiesHandler {
         this.nonNull = nonNull;
         this.propertiesPath = CONFIG_HOME_DIRECTORY.resolve(filename);
         this.configValues = configValues;
+
+
     }
 
     public void initialize() {
@@ -69,6 +84,14 @@ public class PropertiesHandler {
 
 
 
+    }
+
+    public static Path getConfigHomeDirectory() {
+        return CONFIG_HOME_DIRECTORY;
+    }
+
+    public static boolean isProductionEnv() {
+        return PRODUCTION_ENV;
     }
 
     public void load() throws IOException {
@@ -234,6 +257,40 @@ public class PropertiesHandler {
         builder.append("}");
 
         return builder.toString();
+    }
+
+    private static void copyResourcesFilesToProdEnv() {
+        try {
+            final File jarFile = new File(PropertiesHandler.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+
+            if (jarFile.isFile()) {  // Run with JAR file
+                final JarFile jar = new JarFile(jarFile);
+                final Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
+                while (entries.hasMoreElements()) {
+                    JarEntry entry = entries.nextElement();
+
+                    if (!entry.isDirectory() && entry.getName().startsWith(APP_NAME) && !entry.getName().endsWith(".properties")) {
+                        System.out.println("Copying " + entry.getName());
+                        System.out.println("Config Home Directory: " + CONFIG_HOME_DIRECTORY);
+                        Path path = Paths.get(entry.getName()).getFileName();
+                        Path directPath = getConfigHomeDirectory().resolve(path);
+                        System.out.println("To Path: " + directPath);
+                        try (InputStream is = jar.getInputStream(entry);
+                             OutputStream os = new FileOutputStream(directPath.toFile())) {
+                            byte[] buffer = new byte[4096];
+                            int bytesRead;
+                            while ((bytesRead = is.read(buffer)) != -1) {
+                                os.write(buffer, 0, bytesRead);
+                            }
+                        }
+                    }
+                }
+                jar.close();
+            }
+        } catch (IOException e) {
+            System.out.println("Error when copying over temp files to prod env!");
+            e.printStackTrace();
+        }
     }
 
     public static class Builder {

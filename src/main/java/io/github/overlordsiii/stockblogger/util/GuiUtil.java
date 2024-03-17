@@ -60,7 +60,7 @@ public class GuiUtil {
 
 		if (imageUrl == null) {
 			System.out.println("Image URL was null for " + name);
-			url = PropertiesHandler.CONFIG_HOME_DIRECTORY.resolve("not_found.png").toFile().toURI().toURL();
+			url = PropertiesHandler.getConfigHomeDirectory().resolve("not_found.png").toFile().toURI().toURL();
 		} else {
 			url = URI.create(imageUrl).toURL();
 		}
