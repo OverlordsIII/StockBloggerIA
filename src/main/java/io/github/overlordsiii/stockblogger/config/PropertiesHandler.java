@@ -31,7 +31,7 @@ public class PropertiesHandler {
         if (nextLine.equals("true") || nextLine.equals("yes")) {
             try {
                 CONFIG_HOME_DIRECTORY = new File(PropertiesHandler.class.getProtectionDomain().getCodeSource().getLocation()
-                    .toURI()).toPath();
+                    .toURI()).toPath().getParent();
             } catch (URISyntaxException e) {
                 System.out.println("Error while finding config home directory!");
                 e.printStackTrace();
