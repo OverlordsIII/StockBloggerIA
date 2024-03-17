@@ -4,25 +4,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class MiscUtil {
-
-    public static <T, K> T getLastKey(Map<T, K> map) {
-        if (map.isEmpty()) {
-            return null;
-        }
-
-        List<T> keys = new ArrayList<>(map.keySet());
-
-        return keys.get(keys.size() - 1);
-    }
 
     public static <T, K> T getFirstKey(Map<T, K> map) {
         if (map.isEmpty()) {
@@ -31,35 +17,8 @@ public class MiscUtil {
 
         List<T> keys = new ArrayList<>(map.keySet());
 
-        return keys.get(0);
+        return keys.getFirst();
     }
-
-    public static <T, K> Map<T, K> reverseMap(Map<T, K> map) {
-        T lastKey = MiscUtil.getLastKey(map);
-
-        if (lastKey == null) {
-            return null;
-        }
-
-        Map<T, K> treeMap = new TreeMap<>(Collections.reverseOrder());
-
-        treeMap.putAll(map);
-
-        List<K> reversedValues = new ArrayList<>(treeMap.values());
-
-        List<T> reversedKeys = new ArrayList<>(treeMap.keySet());
-
-        // since we store map in inverted order, we got to invert now
-        // in newmap, we will put data starting with the oldest data
-        Map<T, K> newData = new HashMap<>();
-
-        for (int i = 0; i <= map.size(); i++) {
-            newData.put(reversedKeys.get(i), reversedValues.get(i));
-        }
-
-        return newData;
-    }
-
 
 
     public static  <T, K> String getFormattedMap(Map<T, K> map, Function<T, String> keyMapper, Function<K, JsonElement> valueMapper) {

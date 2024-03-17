@@ -8,6 +8,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -61,7 +62,7 @@ public class GuiUtil {
 			System.out.println("Image URL was null for " + name);
 			url = PropertiesHandler.CONFIG_HOME_DIRECTORY.resolve("not_found.png").toFile().toURI().toURL();
 		} else {
-			url = new URL(imageUrl);
+			url = URI.create(imageUrl).toURL();
 		}
 
 
@@ -97,6 +98,14 @@ public class GuiUtil {
 		box.add(label);
 
 		return box;
+	}
+
+	public static void addSelectedStockIndicator(Stock selectedStock, JPanel topInnerPanel) throws MalformedURLException {
+		Box box = Box.createVerticalBox();
+
+		box.add(GuiUtil.stockToPanel(selectedStock, box));
+
+		topInnerPanel.add(box);
 	}
 
 	public static void addRivals(JPanel bottomInnerPanel, List<Stock> rivals) throws MalformedURLException {

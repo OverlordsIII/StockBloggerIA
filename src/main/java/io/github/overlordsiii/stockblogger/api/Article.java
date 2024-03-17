@@ -26,10 +26,6 @@ public class Article {
         this.time = time;
     }
 
-    public void addBulletPoint(String bp) {
-        summarizedBulletPoints.add(bp);
-    }
-
     public List<String> getSummarizedBulletPoints() {
         return summarizedBulletPoints;
     }
@@ -42,21 +38,10 @@ public class Article {
         return url;
     }
 
-    public String getDesc() {
-        return desc;
-    }
-
-    public LocalDateTime getTime() {
-        return time;
-    }
-
     public void setHtmlContent(String htmlContent) {
         this.htmlContent = htmlContent;
     }
 
-    public String getHtmlContent() {
-        return htmlContent;
-    }
 
     public void setBulletPoints(List<String> bps) {
         this.summarizedBulletPoints = bps;

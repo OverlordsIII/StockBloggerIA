@@ -54,11 +54,7 @@ public class StockBloggerGUI extends JFrame {
 
 		contentPanel.add(mainSplitPane, BorderLayout.CENTER);
 
-		Box box = Box.createVerticalBox();
-
-		box.add(GuiUtil.stockToPanel(selectedStock, box));
-
-		topInnerPanel.add(box);
+		GuiUtil.addSelectedStockIndicator(selectedStock, topInnerPanel);
 
 		GuiUtil.addRivals(bottomInnerPanel, rivals);
 

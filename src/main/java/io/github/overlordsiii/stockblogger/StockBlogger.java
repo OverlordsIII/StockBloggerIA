@@ -68,7 +68,7 @@ public class StockBlogger {
         }
 
 
-        String[] rivals = RequestUtil.getRivals(response);
+        List<String> rivals = RequestUtil.getRivals(response);
 
         List<Stock> rivalStocks = new ArrayList<>();
 

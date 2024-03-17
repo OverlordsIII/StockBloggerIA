@@ -20,13 +20,6 @@ public class Stock {
     // Format 1 (week ago), etc
     private Map<LocalDateTime, Double> historicalData = new TreeMap<>();
 
-    public Stock(String symbol, String name, Double price, Map<LocalDateTime, Double> historicalData) {
-        this.symbol = symbol;
-        this.name = name;
-        this.price = price;
-        this.historicalData = historicalData;
-    }
-
     public Stock(String symbol, String name, Double price, String logoUrl) {
         this.symbol = symbol;
         this.name = name;
@@ -36,18 +29,6 @@ public class Stock {
 
     public String getLogoUrl() {
         return logoUrl;
-    }
-
-    public void setSymbol(String symbol) {
-        this.symbol = symbol;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
     }
 
     public void addHistoricalDataPoint(double data) {

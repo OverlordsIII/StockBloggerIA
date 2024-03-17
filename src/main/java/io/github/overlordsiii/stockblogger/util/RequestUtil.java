@@ -23,6 +23,8 @@ import java.util.*;
 
 public class RequestUtil {
 
+    private static boolean apiKeyCounter = true;
+
     public static JsonObject chatGPTHasError(JsonObject response) {
         if (response.has("error")) {
             return response.get("error").getAsJsonObject();
@@ -40,7 +42,7 @@ public class RequestUtil {
         return Character.isDigit(firstChar);
     }
 
-    public static String[] getRivals(JsonObject response) {
+    public static List<String> getRivals(JsonObject response) {
         JsonArray choices = response.getAsJsonArray("choices");
         JsonObject message = choices.get(0).getAsJsonObject().getAsJsonObject("message");
 
@@ -70,7 +72,7 @@ public class RequestUtil {
             rivals[i] = rival;
         }
 
-        return rivals;
+        return new ArrayList<>(Arrays.asList(rivals));
     }
 
     public static Double getPrice(JsonObject object) {
@@ -99,74 +101,33 @@ public class RequestUtil {
             return symbol;
         }
 
-        JsonObject object = array.get(0).getAsJsonObject();
+        int i = 0;
+        for (JsonElement jsonElement : array) {
+            JsonObject object = jsonElement.getAsJsonObject();
+            String name = object.get("name").getAsString();
 
-        return object.get("name").getAsString();
-    }
+            System.out.println(i + " - " + name + " (" + object.get("country").getAsString() + " - " + object.get("exchange").getAsString() +  ")");
+            i++;
+        }
 
-    public static Double getPrice(String symbol) throws IOException, InterruptedException {
-        Request request = Requests.makeStockPriceRequest(symbol);
+        System.out.println("Enter the number off the stock you desire (if you know the stock name and it's not here, enter it instead). If you don't see any companies listed, it is likely your requested company is not public on the stock market. Please type \"null\" if that is so.");
 
-        JsonObject object = request.makeRequest();
+        String line = StockBlogger.SCANNER.nextLine().trim();
 
-        Double price = RequestUtil.getPrice(object);
-
-        if (price == null) {
-            System.out.println("Error when finding price for symbol: \n" + symbol);
-            System.out.println("Response: \n" + JsonUtils.elementToString(object));
+        if (line.equals("-1")) {
             return null;
         }
 
-        String formatted = String.format("%.2f", price);
-
-        return Double.parseDouble(formatted);
-    }
-
-    public static Map<String, Double> getRivalPrices(String[] rivals) throws IOException, InterruptedException {
-        Map<String, Double> map = new HashMap<>();
-
-        for (String rival : rivals) {
-            String symbol = getStockSymbol(rival);
-
-            if (symbol == null) {
-                continue;
-            }
-
-            Double price = getPrice(symbol);
-
-            map.put(symbol, price);
+        if (MiscUtil.isNum(line)) {
+            int num = Integer.parseInt(line);
+            return array.get(num).getAsJsonObject().get("name").getAsString();
         }
 
-        return map;
-    }
-
-    // returns stock data with
-    // first element stock price right now
-    // next ones are stock prices one month seperated
-    // goes back 3 years
-    public static List<Double> getAllHistoricalStockData(String symbol) throws IOException, InterruptedException {
-        List<Double> doubles = new ArrayList<>();
-
-        Request request = Requests.makeHistoricalPriceRequest(symbol);
-
-        JsonObject response = request.makeRequest();
-
-        if (!response.has("values")) {
-            System.out.println("Error when querying historical stock data!");
-            System.out.println("Response:\n" + JsonUtils.elementToString(response));
+        if (line.equalsIgnoreCase("null") || line.isEmpty()) {
             return null;
         }
 
-        JsonArray array = response.getAsJsonArray("values");
-
-        for (JsonElement element : array) {
-            JsonObject object = element.getAsJsonObject();
-            Double doubl = Double.parseDouble(object.get("close").getAsString());
-            String price = String.format("%.2f", doubl);
-            doubles.add(Double.parseDouble(price));
-        }
-
-        return doubles;
+        return line.toUpperCase();
     }
 
     public static String getStockSymbol(String bestGuessName) throws IOException, InterruptedException {
@@ -206,23 +167,105 @@ public class RequestUtil {
         return line.toUpperCase();
     }
 
+    public static Double getPrice(String symbol) throws IOException, InterruptedException {
+        Request request = Requests.makeStockPriceRequest(symbol);
+
+        JsonObject object = request.makeRequest();
+
+        Double price = RequestUtil.getPrice(object);
+
+        if (price == null) {
+            System.out.println("Error when finding price for symbol: \n" + symbol);
+            System.out.println("Response: \n" + JsonUtils.elementToString(object));
+            return null;
+        }
+
+        String formatted = String.format("%.2f", price);
+
+        return Double.parseDouble(formatted);
+    }
+
+    public static Map<String, Double> getRivalPricesInternal(Map<String, Double> map, List<String> rivals) throws IOException, InterruptedException {
+        if (rivals.isEmpty()) {
+            return map;
+        }
+
+        String rival = rivals.removeFirst();
+
+        String symbol = getStockSymbol(rival);
+
+        if (symbol == null) {
+            return getRivalPricesInternal(map, rivals);
+        }
+
+        Double price = getPrice(symbol);
+
+        map.put(symbol, price);
+
+        return getRivalPricesInternal(map, rivals);
+    }
+
+    public static Map<String, Double> getRivalPrices(List<String> rivals) throws IOException, InterruptedException {
+        return getRivalPricesInternal(new HashMap<>(), rivals);
+        /*
+        Map<String, Double> map = new HashMap<>();
+
+        for (String rival : rivals) {
+            String symbol = getStockSymbol(rival);
+
+            if (symbol == null) {
+                continue;
+            }
+
+            Double price = getPrice(symbol);
+
+            map.put(symbol, price);
+        }
+
+        return map;
+
+         */
+    }
+
+    // returns stock data with
+    // first element stock price right now
+    // next ones are stock prices one month seperated
+    // goes back 3 years
+    public static List<Double> getAllHistoricalStockData(String symbol) throws IOException, InterruptedException {
+        List<Double> doubles = new ArrayList<>();
+
+        Request request = Requests.makeHistoricalPriceRequest(symbol);
+
+        JsonObject response = request.makeRequest();
+
+        if (!response.has("values")) {
+            System.out.println("Error when querying historical stock data!");
+            System.out.println("Response:\n" + JsonUtils.elementToString(response));
+            return null;
+        }
+
+        JsonArray array = response.getAsJsonArray("values");
+
+        for (JsonElement element : array) {
+            JsonObject object = element.getAsJsonObject();
+            Double doubl = Double.parseDouble(object.get("close").getAsString());
+            String price = String.format("%.2f", doubl);
+            doubles.add(Double.parseDouble(price));
+        }
+
+        return doubles;
+    }
+
+
+
     //ensures all spaces are replace
     public static String urlifyString(String string) {
         return string.replaceAll("\\s+", "");
     }
 
     public static String getStockAPIKey() {
-        Random random = new Random();
-        boolean bl = random.nextBoolean();
-
-        return StockBlogger.API_KEY.getConfigOption(bl ? "twelveDataApiKey" : "twelveDataApiKey2");
-    }
-
-    public static String getChatGptApiKey() {
-        Random random = new Random();
-        boolean bl = random.nextBoolean();
-
-        return StockBlogger.API_KEY.getConfigOption(bl ? "chatGptApiKey" : "chatGptApiKey2");
+        apiKeyCounter = !apiKeyCounter;
+        return StockBlogger.API_KEY.getConfigOption(apiKeyCounter ? "twelveDataApiKey" : "twelveDataApiKey2");
     }
 
     public static List<Article> getArticles(String symbol) throws IOException, InterruptedException, URISyntaxException {
