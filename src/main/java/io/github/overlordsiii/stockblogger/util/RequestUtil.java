@@ -116,16 +116,27 @@ public class RequestUtil {
 
         String line = StockBlogger.SCANNER.nextLine().trim();
 
+        if (line.isEmpty()) {
+            System.out.println("Please follow directions and enter a number!");
+            return getName(symbol);
+        }
+
         if (line.equals("-1")) {
             return null;
         }
 
         if (MiscUtil.isNum(line)) {
             int num = Integer.parseInt(line);
-            return array.get(num).getAsJsonObject().get("name").getAsString();
+            try {
+                return array.get(num).getAsJsonObject().get("name").getAsString();
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("Error when querying! You have entered a number that is not in the range of values provided!");
+                System.out.println("Please try again and enter the number that corresponds with the stock you want!");
+                return getName(symbol);
+            }
         }
 
-        if (line.equalsIgnoreCase("null") || line.isEmpty()) {
+        if (line.equalsIgnoreCase("null")) {
             return null;
         }
 
@@ -149,9 +160,14 @@ public class RequestUtil {
             i++;
         }
 
-        System.out.println("Enter the number off the stock you desire (if you know the stock symbol and it's not here, enter it instead). If you don't see any companies listed, it is likely your requested company is not public on the stock market. Please type \" + null + \" if that is so. ");
+        System.out.println("Enter the number off the stock you desire (if you know the stock symbol and it's not here, enter it instead). If you don't see any companies listed, it is likely your requested company is not public on the stock market. Please type \" + null + \" or type -1 if that is so. ");
 
         String line = StockBlogger.SCANNER.nextLine().trim();
+
+        if (line.isEmpty()) {
+            System.out.println("Please follow directions and enter a number!");
+            return getStockSymbol(bestGuessName);
+        }
 
         if (line.equals("-1")) {
             return null;
@@ -159,10 +175,16 @@ public class RequestUtil {
 
         if (MiscUtil.isNum(line)) {
             int num = Integer.parseInt(line);
-            return array.get(num).getAsJsonObject().get("symbol").getAsString();
+            try {
+                return array.get(num).getAsJsonObject().get("symbol").getAsString();
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("Error when querying! You have entered a number that is not in the range of values provided!");
+                System.out.println("Please try again and enter the number that corresponds with the stock you want!");
+                return getStockSymbol(bestGuessName);
+            }
         }
 
-        if (line.equalsIgnoreCase("null") || line.isEmpty()) {
+        if (line.equalsIgnoreCase("null")) {
             return null;
         }
 
